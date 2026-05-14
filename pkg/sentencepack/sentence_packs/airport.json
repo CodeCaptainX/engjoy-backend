@@ -1,0 +1,167 @@
+{
+  "category": "airport",
+  "focuses": {
+    "check-in": [
+      {
+        "sentence": "Where is the check-in desk for Qatar Airways?",
+        "meaning": "Please tell me the location of the counter where I register for my flight with Qatar Airways.",
+        "grammar_focus": "Asking for location (Where is...?)",
+        "vocabulary": [
+          {
+            "word": "check-in desk",
+            "meaning": "the counter where you register for your flight and drop off luggage"
+          },
+          {
+            "word": "Airways",
+            "meaning": "a common word in airline names"
+          }
+        ],
+        "example": "Where is the bus stop for downtown?"
+      },
+      {
+        "sentence": "Here is my passport and booking reference.",
+        "meaning": "These are my identification document and the code for my flight reservation.",
+        "grammar_focus": "Presenting items (Here is/are...)",
+        "vocabulary": [
+          {
+            "word": "passport",
+            "meaning": "an official document for international travel"
+          },
+          {
+            "word": "booking reference",
+            "meaning": "a code that identifies your flight reservation"
+          }
+        ],
+        "example": "Here is my ID and credit card."
+      },
+      {
+        "sentence": "How many bags can I check in for this flight?",
+        "meaning": "What is the maximum number of suitcases I can give to the airline to be put in the cargo hold for this trip?",
+        "grammar_focus": "Asking about quantity (How many...?)",
+        "vocabulary": [
+          {
+            "word": "check in",
+            "meaning": "to officially register your luggage with the airline"
+          },
+          {
+            "word": "bags",
+            "meaning": "suitcases or travel cases"
+          }
+        ],
+        "example": "How many slices of pizza can I eat?"
+      },
+      {
+        "sentence": "Is this bag small enough for a carry-on?",
+        "meaning": "Can I take this bag with me into the airplane cabin because it fits the size limits?",
+        "grammar_focus": "Asking about suitability (Is ... enough for ...?)",
+        "vocabulary": [
+          {
+            "word": "small enough",
+            "meaning": "sufficiently small; meeting the size requirement"
+          },
+          {
+            "word": "carry-on",
+            "meaning": "a bag allowed inside the airplane with you"
+          }
+        ],
+        "example": "Is this shirt clean enough for the party?"
+      },
+      {
+        "sentence": "Can I have a window seat, please?",
+        "meaning": "I would like a seat next to the window if it's possible.",
+        "grammar_focus": "Polite request (Can I have...?)",
+        "vocabulary": [
+          {
+            "word": "window seat",
+            "meaning": "a seat next to the window of the airplane"
+          },
+          {
+            "word": "please",
+            "meaning": "used to make a request polite"
+          }
+        ],
+        "example": "Can I have a glass of water, please?"
+      },
+      {
+        "sentence": "Is an aisle seat available?",
+        "meaning": "Can I have a seat next to the walkway inside the plane, or is there one free?",
+        "grammar_focus": "Asking about availability (Is ... available?)",
+        "vocabulary": [
+          {
+            "word": "aisle seat",
+            "meaning": "a seat next to the aisle (the path between seats)"
+          },
+          {
+            "word": "available",
+            "meaning": "able to be used or obtained"
+          }
+        ],
+        "example": "Is a table for two available?"
+      },
+      {
+        "sentence": "What is my gate number and boarding time?",
+        "meaning": "Please tell me the specific entrance for my flight and when I should get on the plane.",
+        "grammar_focus": "Asking for specific information (What is...?)",
+        "vocabulary": [
+          {
+            "word": "gate number",
+            "meaning": "the specific exit at the airport for boarding a flight"
+          },
+          {
+            "word": "boarding time",
+            "meaning": "the time when passengers begin to enter the airplane"
+          }
+        ],
+        "example": "What is your phone number and email address?"
+      },
+      {
+        "sentence": "My bag is overweight. What should I do?",
+        "meaning": "My suitcase weighs more than the allowed limit. Please tell me the next step or solution.",
+        "grammar_focus": "Stating a problem and asking for advice (What should I do?)",
+        "vocabulary": [
+          {
+            "word": "overweight",
+            "meaning": "weighing more than the allowed limit"
+          },
+          {
+            "word": "do",
+            "meaning": "perform an action or take a step"
+          }
+        ],
+        "example": "My car is broken. What should I do?"
+      },
+      {
+        "sentence": "Is the flight on time, or is it delayed?",
+        "meaning": "Will the flight depart at the scheduled time, or will it leave later than planned?",
+        "grammar_focus": "Asking about status (Is ... on time/delayed?)",
+        "vocabulary": [
+          {
+            "word": "on time",
+            "meaning": "at the scheduled moment"
+          },
+          {
+            "word": "delayed",
+            "meaning": "made late; postponed"
+          }
+        ],
+        "example": "Is the train on time, or is it delayed?"
+      },
+      {
+        "sentence": "When does boarding start for flight BA249?",
+        "meaning": "At what time do passengers begin to enter the airplane for flight BA249?",
+        "grammar_focus": "Asking about a start time (When does ... start?)",
+        "vocabulary": [
+          {
+            "word": "boarding",
+            "meaning": "the process of passengers entering an aircraft"
+          },
+          {
+            "word": "flight",
+            "meaning": "a journey by air with a specific number"
+          }
+        ],
+        "example": "When does the movie start tonight?"
+      }
+    ]
+  }
+}

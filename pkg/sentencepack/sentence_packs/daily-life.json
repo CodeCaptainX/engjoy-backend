@@ -1,0 +1,41 @@
+{
+  "category": "daily-life",
+  "focuses": {
+    "home": [
+      {
+        "sentence": "Please turn off the lights before you leave.",
+        "meaning": "Switch the lights off before going out.",
+        "grammar_focus": "Before + subject + verb shows the order of actions.",
+        "vocabulary": [
+          { "word": "turn off", "meaning": "stop a machine or light from working" },
+          { "word": "leave", "meaning": "go away from a place" }
+        ],
+        "example": "Please lock the door before you leave."
+      }
+    ],
+    "errands": [
+      {
+        "sentence": "Can you pick up some milk on your way home?",
+        "meaning": "The speaker asks someone to buy milk while coming home.",
+        "grammar_focus": "Can you + verb is used for casual requests.",
+        "vocabulary": [
+          { "word": "pick up", "meaning": "get or collect something" },
+          { "word": "on your way", "meaning": "during your trip to another place" }
+        ],
+        "example": "Can you pick up my package on your way back?"
+      }
+    ],
+    "neighbors": [
+      {
+        "sentence": "Could you keep the noise down tonight?",
+        "meaning": "The speaker politely asks someone to be quieter tonight.",
+        "grammar_focus": "Could you + verb is a polite request.",
+        "vocabulary": [
+          { "word": "keep down", "meaning": "make something lower or less" },
+          { "word": "noise", "meaning": "unwanted or loud sound" }
+        ],
+        "example": "Could you keep your voice down in the library?"
+      }
+    ]
+  }
+}

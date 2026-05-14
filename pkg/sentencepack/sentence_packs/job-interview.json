@@ -1,0 +1,51 @@
+{
+  "category": "job-interview",
+  "focuses": {
+    "introductions": [
+      {
+        "sentence": "Thank you for inviting me to interview today.",
+        "meaning": "The speaker politely thanks the interviewer for the opportunity.",
+        "grammar_focus": "Thank you for + verb-ing explains the reason for thanks.",
+        "vocabulary": [
+          { "word": "inviting", "meaning": "asking someone to come or participate" },
+          { "word": "interview", "meaning": "a formal meeting for a job" }
+        ],
+        "example": "Thank you for meeting with me today."
+      }
+    ],
+    "experience": [
+      {
+        "sentence": "I have three years of experience in customer support.",
+        "meaning": "The speaker has worked in customer support for three years.",
+        "grammar_focus": "Have + time period + of experience describes work history.",
+        "vocabulary": [
+          { "word": "experience", "meaning": "knowledge or skill from doing work" },
+          { "word": "customer support", "meaning": "helping customers solve problems" }
+        ],
+        "example": "She has five years of experience in marketing."
+      },
+      {
+        "sentence": "I am comfortable working under pressure.",
+        "meaning": "The speaker can work calmly in stressful situations.",
+        "grammar_focus": "Comfortable + verb-ing describes something you can do confidently.",
+        "vocabulary": [
+          { "word": "comfortable", "meaning": "confident or relaxed doing something" },
+          { "word": "under pressure", "meaning": "in a stressful or urgent situation" }
+        ],
+        "example": "I am comfortable speaking with clients."
+      }
+    ],
+    "questions": [
+      {
+        "sentence": "Could you tell me more about the team?",
+        "meaning": "The speaker asks for more information about the people they may work with.",
+        "grammar_focus": "Could you tell me more about + noun is a polite interview question.",
+        "vocabulary": [
+          { "word": "team", "meaning": "a group of people working together" },
+          { "word": "more about", "meaning": "additional information about something" }
+        ],
+        "example": "Could you tell me more about the role?"
+      }
+    ]
+  }
+}

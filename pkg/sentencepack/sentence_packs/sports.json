@@ -1,0 +1,41 @@
+{
+  "category": "sports",
+  "focuses": {
+    "training": [
+      {
+        "sentence": "Focus on your breathing during the drill.",
+        "meaning": "Pay attention to how you breathe while doing the exercise.",
+        "grammar_focus": "Focus on + noun describes what to pay attention to.",
+        "vocabulary": [
+          { "word": "breathing", "meaning": "moving air in and out of the body" },
+          { "word": "drill", "meaning": "a repeated practice exercise" }
+        ],
+        "example": "Focus on your timing during the song."
+      }
+    ],
+    "matches": [
+      {
+        "sentence": "Our team played well in the second half.",
+        "meaning": "The team performed well after halftime.",
+        "grammar_focus": "Past simple describes a completed past action.",
+        "vocabulary": [
+          { "word": "team", "meaning": "a group playing together" },
+          { "word": "second half", "meaning": "the later part of a game" }
+        ],
+        "example": "She worked hard in the final hour."
+      }
+    ],
+    "coaching": [
+      {
+        "sentence": "Move into space after you pass.",
+        "meaning": "After passing the ball, go to an open area.",
+        "grammar_focus": "After + subject + verb shows action order.",
+        "vocabulary": [
+          { "word": "move", "meaning": "go from one place to another" },
+          { "word": "space", "meaning": "an open area" }
+        ],
+        "example": "Close the door after you leave."
+      }
+    ]
+  }
+}

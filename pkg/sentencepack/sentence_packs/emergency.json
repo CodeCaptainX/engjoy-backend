@@ -1,0 +1,41 @@
+{
+  "category": "emergency",
+  "focuses": {
+    "help": [
+      {
+        "sentence": "Please call an ambulance right away.",
+        "meaning": "The speaker urgently asks someone to contact emergency medical help.",
+        "grammar_focus": "Please + base verb can make an urgent request polite.",
+        "vocabulary": [
+          { "word": "ambulance", "meaning": "a vehicle that takes sick or injured people to hospital" },
+          { "word": "right away", "meaning": "immediately" }
+        ],
+        "example": "Please call the police right away."
+      }
+    ],
+    "lost": [
+      {
+        "sentence": "I lost my passport at the station.",
+        "meaning": "The speaker cannot find their passport after being at the station.",
+        "grammar_focus": "Past simple describes a completed past event.",
+        "vocabulary": [
+          { "word": "lost", "meaning": "could not find something" },
+          { "word": "passport", "meaning": "an official document for international travel" }
+        ],
+        "example": "I lost my wallet on the bus."
+      }
+    ],
+    "danger": [
+      {
+        "sentence": "There is smoke coming from the kitchen.",
+        "meaning": "Smoke is appearing or moving out of the kitchen.",
+        "grammar_focus": "There is + noun + verb-ing describes something happening now.",
+        "vocabulary": [
+          { "word": "smoke", "meaning": "gray or black gas from fire" },
+          { "word": "coming from", "meaning": "moving out of a place" }
+        ],
+        "example": "There is water coming from the ceiling."
+      }
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "category": "tech-support",
+  "focuses": {
+    "login": [
+      {
+        "sentence": "I cannot log in to my account.",
+        "meaning": "The speaker is unable to access their account.",
+        "grammar_focus": "Cannot + base verb expresses inability.",
+        "vocabulary": [
+          { "word": "log in", "meaning": "access an account with credentials" },
+          { "word": "account", "meaning": "a personal user profile or service record" }
+        ],
+        "example": "I cannot log in to the app."
+      }
+    ],
+    "device": [
+      {
+        "sentence": "My laptop keeps restarting by itself.",
+        "meaning": "The laptop repeatedly restarts without the user choosing it.",
+        "grammar_focus": "Keeps + verb-ing describes repeated unwanted action.",
+        "vocabulary": [
+          { "word": "restarting", "meaning": "turning off and on again" },
+          { "word": "by itself", "meaning": "without help or action from anyone" }
+        ],
+        "example": "The printer keeps disconnecting by itself."
+      }
+    ],
+    "internet": [
+      {
+        "sentence": "The internet connection is very slow today.",
+        "meaning": "The network is working, but not quickly.",
+        "grammar_focus": "Be + adjective describes the current condition.",
+        "vocabulary": [
+          { "word": "connection", "meaning": "a link to the internet or network" },
+          { "word": "slow", "meaning": "not fast" }
+        ],
+        "example": "The website is very slow this morning."
+      }
+    ]
+  }
+}

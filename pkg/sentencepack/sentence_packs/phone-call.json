@@ -1,0 +1,51 @@
+{
+  "category": "phone-call",
+  "focuses": {
+    "opening": [
+      {
+        "sentence": "Hello, this is Maya speaking.",
+        "meaning": "The speaker identifies themselves at the start of a phone call.",
+        "grammar_focus": "This is + name speaking is a common phone introduction.",
+        "vocabulary": [
+          { "word": "speaking", "meaning": "talking on the phone" },
+          { "word": "this is", "meaning": "used to identify yourself by phone" }
+        ],
+        "example": "Hello, this is Daniel speaking."
+      }
+    ],
+    "problems": [
+      {
+        "sentence": "The line is breaking up.",
+        "meaning": "The phone connection is bad and the sound is unclear.",
+        "grammar_focus": "Present continuous describes something happening now.",
+        "vocabulary": [
+          { "word": "line", "meaning": "the phone connection" },
+          { "word": "breaking up", "meaning": "becoming unclear or interrupted" }
+        ],
+        "example": "Your voice is breaking up."
+      },
+      {
+        "sentence": "Could you speak a little more slowly?",
+        "meaning": "The speaker politely asks the other person to talk slower.",
+        "grammar_focus": "Could you + verb is a polite request.",
+        "vocabulary": [
+          { "word": "speak", "meaning": "talk" },
+          { "word": "slowly", "meaning": "not fast" }
+        ],
+        "example": "Could you explain that more slowly?"
+      }
+    ],
+    "messages": [
+      {
+        "sentence": "Can I leave a message for her?",
+        "meaning": "The speaker asks to give a message to someone who is not available.",
+        "grammar_focus": "Can I + verb asks permission.",
+        "vocabulary": [
+          { "word": "leave a message", "meaning": "give information for someone to receive later" },
+          { "word": "for her", "meaning": "intended for a female person" }
+        ],
+        "example": "Can I leave a message for the manager?"
+      }
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "category": "restaurant",
+  "focuses": {
+    "ordering": [
+      {
+        "sentence": "I would like the chicken soup, please.",
+        "meaning": "The speaker politely orders chicken soup.",
+        "grammar_focus": "I would like + noun is a polite ordering pattern.",
+        "vocabulary": [
+          { "word": "would like", "meaning": "want, in a polite way" },
+          { "word": "soup", "meaning": "a hot liquid food" }
+        ],
+        "example": "I would like a glass of water, please."
+      }
+    ],
+    "service": [
+      {
+        "sentence": "Could we have some more water, please?",
+        "meaning": "The customers politely ask the server for more water.",
+        "grammar_focus": "Could we have + noun is a polite restaurant request.",
+        "vocabulary": [
+          { "word": "some more", "meaning": "an additional amount" },
+          { "word": "water", "meaning": "a clear drink" }
+        ],
+        "example": "Could we have some more bread, please?"
+      }
+    ],
+    "payment": [
+      {
+        "sentence": "We would like to split the bill.",
+        "meaning": "The group wants each person to pay part of the bill.",
+        "grammar_focus": "Would like to + verb expresses a polite wish.",
+        "vocabulary": [
+          { "word": "split", "meaning": "divide into parts" },
+          { "word": "bill", "meaning": "the amount to pay" }
+        ],
+        "example": "We would like to split the cost."
+      }
+    ]
+  }
+}

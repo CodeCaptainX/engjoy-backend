@@ -1,0 +1,41 @@
+{
+  "category": "travel",
+  "focuses": {
+    "tickets": [
+      {
+        "sentence": "I need a one-way ticket to the airport.",
+        "meaning": "The speaker wants a ticket for travel to the airport only.",
+        "grammar_focus": "Need + noun expresses necessity.",
+        "vocabulary": [
+          { "word": "one-way ticket", "meaning": "a ticket for travel in one direction" },
+          { "word": "airport", "meaning": "a place where planes arrive and leave" }
+        ],
+        "example": "I need a ticket to the city center."
+      }
+    ],
+    "directions": [
+      {
+        "sentence": "Turn left at the traffic lights.",
+        "meaning": "Go to the left when you reach the traffic lights.",
+        "grammar_focus": "Imperative verb gives a direct instruction.",
+        "vocabulary": [
+          { "word": "turn left", "meaning": "change direction to the left" },
+          { "word": "traffic lights", "meaning": "lights that control road traffic" }
+        ],
+        "example": "Turn right after the bank."
+      }
+    ],
+    "hotel": [
+      {
+        "sentence": "I have a reservation under my name.",
+        "meaning": "The speaker booked a room using their name.",
+        "grammar_focus": "Have + noun shows possession or arrangement.",
+        "vocabulary": [
+          { "word": "reservation", "meaning": "a booking made before arrival" },
+          { "word": "under my name", "meaning": "registered with my name" }
+        ],
+        "example": "I have a table reservation under Lee."
+      }
+    ]
+  }
+}

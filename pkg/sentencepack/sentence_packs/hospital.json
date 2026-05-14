@@ -1,0 +1,51 @@
+{
+  "category": "hospital",
+  "focuses": {
+    "symptoms": [
+      {
+        "sentence": "I have been coughing for three days.",
+        "meaning": "The speaker started coughing three days ago and is still coughing now.",
+        "grammar_focus": "Present perfect continuous: have been + verb-ing + time period.",
+        "vocabulary": [
+          { "word": "coughing", "meaning": "forcing air from the throat because of sickness" },
+          { "word": "for", "meaning": "used with a length of time" }
+        ],
+        "example": "I have been waiting for twenty minutes."
+      },
+      {
+        "sentence": "The pain gets worse when I walk.",
+        "meaning": "Walking makes the pain stronger or more serious.",
+        "grammar_focus": "Gets + adjective describes a change in condition.",
+        "vocabulary": [
+          { "word": "pain", "meaning": "physical hurt" },
+          { "word": "worse", "meaning": "more bad or more serious" }
+        ],
+        "example": "The traffic gets worse after five o'clock."
+      }
+    ],
+    "appointments": [
+      {
+        "sentence": "Could I reschedule my checkup for next week?",
+        "meaning": "The speaker politely asks to move the checkup to next week.",
+        "grammar_focus": "Could I + verb is a polite way to ask permission.",
+        "vocabulary": [
+          { "word": "reschedule", "meaning": "change the planned time" },
+          { "word": "checkup", "meaning": "a routine medical examination" }
+        ],
+        "example": "Could I reschedule our meeting for Monday?"
+      }
+    ],
+    "medicine": [
+      {
+        "sentence": "Take one tablet after breakfast.",
+        "meaning": "You should take one pill after eating breakfast.",
+        "grammar_focus": "Imperative verb for instructions: Take one tablet.",
+        "vocabulary": [
+          { "word": "tablet", "meaning": "a small solid piece of medicine" },
+          { "word": "after", "meaning": "later than something" }
+        ],
+        "example": "Drink this medicine after lunch."
+      }
+    ]
+  }
+}

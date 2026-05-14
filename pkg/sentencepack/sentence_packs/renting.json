@@ -1,0 +1,41 @@
+{
+  "category": "renting",
+  "focuses": {
+    "viewing": [
+      {
+        "sentence": "Is the apartment available next month?",
+        "meaning": "The speaker asks if they can rent the apartment next month.",
+        "grammar_focus": "Is + noun + available asks whether something can be used or rented.",
+        "vocabulary": [
+          { "word": "apartment", "meaning": "a rented home in a building" },
+          { "word": "available", "meaning": "free to use, rent, or buy" }
+        ],
+        "example": "Is the room available this weekend?"
+      }
+    ],
+    "maintenance": [
+      {
+        "sentence": "The sink has been leaking since yesterday.",
+        "meaning": "Water started leaking yesterday and is still leaking now.",
+        "grammar_focus": "Present perfect continuous: has been + verb-ing + since.",
+        "vocabulary": [
+          { "word": "sink", "meaning": "a basin used for washing" },
+          { "word": "leaking", "meaning": "letting liquid escape" }
+        ],
+        "example": "The roof has been leaking since last night."
+      }
+    ],
+    "contract": [
+      {
+        "sentence": "How much is the security deposit?",
+        "meaning": "The speaker asks the amount of money paid before renting.",
+        "grammar_focus": "How much is + noun asks about price or cost.",
+        "vocabulary": [
+          { "word": "security deposit", "meaning": "money held by a landlord during a rental" },
+          { "word": "deposit", "meaning": "money paid in advance" }
+        ],
+        "example": "How much is the monthly rent?"
+      }
+    ]
+  }
+}

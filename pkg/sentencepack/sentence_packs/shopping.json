@@ -1,0 +1,41 @@
+{
+  "category": "shopping",
+  "focuses": {
+    "prices": [
+      {
+        "sentence": "Is this price before or after the discount?",
+        "meaning": "The speaker asks whether the discount is already included.",
+        "grammar_focus": "Before or after compares two possible times or states.",
+        "vocabulary": [
+          { "word": "price", "meaning": "the amount something costs" },
+          { "word": "discount", "meaning": "a lower price than usual" }
+        ],
+        "example": "Is this total before or after tax?"
+      }
+    ],
+    "sizes": [
+      {
+        "sentence": "Can I try on a larger size?",
+        "meaning": "The speaker asks to wear a bigger size to test the fit.",
+        "grammar_focus": "Can I + verb asks permission.",
+        "vocabulary": [
+          { "word": "try on", "meaning": "put on clothes to see if they fit" },
+          { "word": "larger", "meaning": "bigger" }
+        ],
+        "example": "Can I try on these shoes?"
+      }
+    ],
+    "returns": [
+      {
+        "sentence": "I would like to return this item.",
+        "meaning": "The speaker wants to give the item back to the store.",
+        "grammar_focus": "Would like to + verb is a polite customer-service phrase.",
+        "vocabulary": [
+          { "word": "return", "meaning": "give something back" },
+          { "word": "item", "meaning": "one product or thing" }
+        ],
+        "example": "I would like to exchange this shirt."
+      }
+    ]
+  }
+}

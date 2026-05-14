@@ -1,0 +1,51 @@
+{
+  "category": "school",
+  "focuses": {
+    "classroom": [
+      {
+        "sentence": "Could you repeat the instructions, please?",
+        "meaning": "The speaker politely asks someone to say the instructions again.",
+        "grammar_focus": "Polite request with Could you + base verb.",
+        "vocabulary": [
+          { "word": "repeat", "meaning": "say or do something again" },
+          { "word": "instructions", "meaning": "directions that tell you what to do" }
+        ],
+        "example": "Could you repeat the last question, please?"
+      },
+      {
+        "sentence": "The teacher asked us to work in pairs.",
+        "meaning": "The teacher told the students to work with one partner.",
+        "grammar_focus": "Reported request pattern: asked us to + verb.",
+        "vocabulary": [
+          { "word": "pairs", "meaning": "groups of two people" },
+          { "word": "asked", "meaning": "requested or told someone to do something" }
+        ],
+        "example": "The manager asked us to join the meeting early."
+      }
+    ],
+    "homework": [
+      {
+        "sentence": "The assignment is due tomorrow morning.",
+        "meaning": "The homework must be finished and submitted by tomorrow morning.",
+        "grammar_focus": "Be due means something must be completed by a deadline.",
+        "vocabulary": [
+          { "word": "assignment", "meaning": "a task given by a teacher" },
+          { "word": "due", "meaning": "expected at a certain time" }
+        ],
+        "example": "The report is due on Friday."
+      }
+    ],
+    "exams": [
+      {
+        "sentence": "Please review your answers before you submit.",
+        "meaning": "Check your answers again before handing in the test.",
+        "grammar_focus": "Before + subject + verb shows an action that happens first.",
+        "vocabulary": [
+          { "word": "review", "meaning": "check or study again" },
+          { "word": "submit", "meaning": "give work to a teacher or system" }
+        ],
+        "example": "Please review the form before you submit it."
+      }
+    ]
+  }
+}

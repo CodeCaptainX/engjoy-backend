@@ -1,0 +1,51 @@
+{
+  "category": "banking",
+  "focuses": {
+    "account": [
+      {
+        "sentence": "I would like to open a savings account.",
+        "meaning": "The speaker wants to create a bank account for saving money.",
+        "grammar_focus": "Would like to + verb is a polite way to state what you want.",
+        "vocabulary": [
+          { "word": "open", "meaning": "create or start an account" },
+          { "word": "savings account", "meaning": "a bank account for keeping money" }
+        ],
+        "example": "I would like to open a business account."
+      },
+      {
+        "sentence": "Could you help me update my account information?",
+        "meaning": "The speaker asks for help changing their bank account details.",
+        "grammar_focus": "Could you help me + verb is a polite request for assistance.",
+        "vocabulary": [
+          { "word": "update", "meaning": "change information to make it current" },
+          { "word": "account information", "meaning": "personal details connected to an account" }
+        ],
+        "example": "Could you help me reset my password?"
+      }
+    ],
+    "atm": [
+      {
+        "sentence": "The ATM did not give me my cash.",
+        "meaning": "The machine failed to dispense the speaker's money.",
+        "grammar_focus": "Did not + base verb forms a past negative sentence.",
+        "vocabulary": [
+          { "word": "ATM", "meaning": "a machine for withdrawing or depositing money" },
+          { "word": "cash", "meaning": "physical money" }
+        ],
+        "example": "The machine did not print my receipt."
+      }
+    ],
+    "payments": [
+      {
+        "sentence": "I need to transfer money to another account.",
+        "meaning": "The speaker needs to move money from one account to another.",
+        "grammar_focus": "Need to + verb expresses necessity.",
+        "vocabulary": [
+          { "word": "transfer", "meaning": "move something from one place to another" },
+          { "word": "another", "meaning": "one more or a different one" }
+        ],
+        "example": "I need to send the payment today."
+      }
+    ]
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "category": "office",
+  "focuses": {
+    "accounting": [
+      {
+        "sentence": "The invoice needs to be approved today.",
+        "meaning": "Someone must approve the invoice before today ends.",
+        "grammar_focus": "Passive infinitive pattern: needs to be + past participle.",
+        "vocabulary": [
+          { "word": "invoice", "meaning": "a document asking for payment" },
+          { "word": "approved", "meaning": "accepted or officially agreed to" }
+        ],
+        "example": "The budget needs to be reviewed today."
+      },
+      {
+        "sentence": "Can you review these numbers for accuracy?",
+        "meaning": "The speaker asks someone to check whether the numbers are correct.",
+        "grammar_focus": "Can you + verb makes a direct but polite work request.",
+        "vocabulary": [
+          { "word": "review", "meaning": "check carefully" },
+          { "word": "accuracy", "meaning": "being correct and exact" }
+        ],
+        "example": "Can you review this email for mistakes?"
+      }
+    ],
+    "software engineering": [
+      {
+        "sentence": "Can you review my pull request?",
+        "meaning": "The speaker asks another developer to check their code changes.",
+        "grammar_focus": "Can you + verb is common for team requests.",
+        "vocabulary": [
+          { "word": "review", "meaning": "check and give feedback" },
+          { "word": "pull request", "meaning": "a request to merge code changes" }
+        ],
+        "example": "Can you review my design before the meeting?"
+      },
+      {
+        "sentence": "The server logs show a database timeout.",
+        "meaning": "The logs indicate that the database took too long to respond.",
+        "grammar_focus": "Subject + verb + object: logs show a problem.",
+        "vocabulary": [
+          { "word": "logs", "meaning": "records of system activity" },
+          { "word": "timeout", "meaning": "a failure because something took too long" }
+        ],
+        "example": "The report shows a small increase in sales."
+      }
+    ],
+    "meetings": [
+      {
+        "sentence": "Please share the agenda before the call.",
+        "meaning": "Send the meeting plan before the call starts.",
+        "grammar_focus": "Please + base verb makes an instruction polite.",
+        "vocabulary": [
+          { "word": "agenda", "meaning": "a list of topics for a meeting" },
+          { "word": "call", "meaning": "a phone or video meeting" }
+        ],
+        "example": "Please send the file before lunch."
+      }
+    ],
+    "email": [
+      {
+        "sentence": "Please attach the file before sending it.",
+        "meaning": "Add the file to the email before you send the email.",
+        "grammar_focus": "Before + verb-ing shows an action that should happen first.",
+        "vocabulary": [
+          { "word": "attach", "meaning": "add a file to a message" },
+          { "word": "sending", "meaning": "making a message go to someone" }
+        ],
+        "example": "Check the address before sending the package."
+      }
+    ]
+  }
+}

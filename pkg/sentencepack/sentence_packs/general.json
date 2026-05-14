@@ -1,0 +1,27 @@
+{
+  "category": "general",
+  "focuses": {
+    "all": [
+      {
+        "sentence": "Could you explain that in a simpler way?",
+        "meaning": "The speaker asks someone to make the explanation easier to understand.",
+        "grammar_focus": "Could you + verb is a polite request.",
+        "vocabulary": [
+          { "word": "explain", "meaning": "make something clear" },
+          { "word": "simpler", "meaning": "easier to understand" }
+        ],
+        "example": "Could you say that in a different way?"
+      },
+      {
+        "sentence": "I need a little more time to answer.",
+        "meaning": "The speaker is asking for extra time before responding.",
+        "grammar_focus": "Need + noun + to + verb expresses necessity.",
+        "vocabulary": [
+          { "word": "a little more", "meaning": "a small additional amount" },
+          { "word": "answer", "meaning": "respond to a question" }
+        ],
+        "example": "I need a little more time to finish."
+      }
+    ]
+  }
+}
