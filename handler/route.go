@@ -3,7 +3,7 @@ package handler
 import (
 	"sentenceminer/internal/sentences"
 	"sentenceminer/internal/user"
-	"sentenceminer/pkg/http/response"
+	response "sentenceminer/pkg/http/response"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"

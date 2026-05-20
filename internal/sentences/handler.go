@@ -6,7 +6,7 @@ import (
 	"sentenceminer/internal/sentences/model"
 	"sentenceminer/internal/sentences/repository"
 	"sentenceminer/internal/sentences/service"
-	"sentenceminer/pkg/http/response"
+	response "sentenceminer/pkg/http/response"
 	"sentenceminer/pkg/postgres"
 	"strconv"
 	"strings"

@@ -3,7 +3,7 @@ package routers
 import (
 	"errors"
 
-	"sentenceminer/pkg/http/response"
+	response "sentenceminer/pkg/http/response"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"

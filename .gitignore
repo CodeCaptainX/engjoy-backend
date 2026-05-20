@@ -1,1 +1,32 @@
+# Local environment files
+.env
+.env.local
+.env.*.local
+
+# Backup and imported clones
+backup_before_merge/
+go-postgres-project-structure/
+
+# Temporary and build artifacts
+tmp/
+tmp/*
+build/
+dist/
+*.log
+
+# Go binaries and vendor
+bin/
+vendor/
+*.exe
+*.out
+
+# IDEs and editors
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
 .env

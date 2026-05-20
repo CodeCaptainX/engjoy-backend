@@ -2,7 +2,7 @@ package user
 
 import (
 	"errors"
-	"sentenceminer/pkg/http/response"
+	response "sentenceminer/pkg/http/response"
 
 	"github.com/gofiber/fiber/v2"
 )
