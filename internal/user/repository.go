@@ -24,7 +24,7 @@ func (r *Repository) FindActiveByEmail(ctx context.Context, email string) (User,
 	var user User
 	err := r.db.QueryRowxContext(
 		ctx,
-		`SELECT id, uuid, status_id, name, email, password_hash, role, last_login_at, created_at, updated_at, deleted_at
+		`SELECT id, uuid, status_id, name, email, password_hash, role_id, last_login_at, created_at, updated_at, deleted_at
 		FROM tbl_users
 		WHERE LOWER(email) = LOWER($1) AND status_id = 1 AND deleted_at IS NULL`,
 		strings.TrimSpace(email),

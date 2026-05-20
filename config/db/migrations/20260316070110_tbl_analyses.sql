@@ -16,16 +16,7 @@ CREATE TABLE IF NOT EXISTS tbl_analyses (
     deleted_by BIGINT,
     deleted_at TIMESTAMPTZ
 );
-
-CREATE INDEX IF NOT EXISTS idx_tbl_analyses_sentence_id ON tbl_analyses(sentence_id);
-CREATE INDEX IF NOT EXISTS idx_tbl_analyses_deleted_at ON tbl_analyses(deleted_at);
-CREATE INDEX IF NOT EXISTS idx_tbl_analyses_uuid ON tbl_analyses(uuid);
-CREATE INDEX IF NOT EXISTS idx_tbl_analyses_status_id ON tbl_analyses(status_id);
 -- +goose StatementEnd
 
 -- +goose Down
-DROP INDEX IF EXISTS idx_tbl_analyses_status_id;
-DROP INDEX IF EXISTS idx_tbl_analyses_uuid;
-DROP INDEX IF EXISTS idx_tbl_analyses_deleted_at;
-DROP INDEX IF EXISTS idx_tbl_analyses_sentence_id;
 DROP TABLE IF EXISTS tbl_analyses;
