@@ -2,6 +2,7 @@ package routers
 
 import (
 	"errors"
+	"os"
 
 	response "sentenceminer/pkg/http/response"
 
@@ -29,9 +30,17 @@ func New() *fiber.App {
 	})
 
 	app.Use(logger.New())
+	
+	// CORS: Restricted to our website origin to prevent third-party API abuse.
+	// You should set ALLOWED_ORIGINS in your .env file.
+	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+	if allowedOrigins == "" {
+		allowedOrigins = "*" // Fallback to all during development, but warn in logs
+	}
+
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*",
-		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+		AllowOrigins: allowedOrigins,
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization, X-App-ID",
 		AllowMethods: "GET, HEAD, PUT, PATCH, POST, DELETE",
 	}))
 

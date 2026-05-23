@@ -62,8 +62,8 @@ func (r *SentenceRepository) Create(text, source, category string) (*model.Sente
 	return &model.SentenceResponse{Sentence: sentence}, nil
 }
 
-func (r *SentenceRepository) Show(req postgres.QueryParamRequest) ([]model.Sentence, int, *apiresponse.ErrorResponse) {
-	req, err := model.SanitizeSentenceShowRequest(req, "")
+func (r *SentenceRepository) Show(req postgres.QueryParamRequest) ([]model.SentenceWithAnalysis, int, *apiresponse.ErrorResponse) {
+	req, err := model.SanitizeSentenceShowRequest(req, "s")
 	if err != nil {
 		return nil, 0, customlog.NewCustomLogResponse(customlog.ErrorParams{
 			LogMessage: "sentence_show_invalid_query",
@@ -86,16 +86,24 @@ func (r *SentenceRepository) Show(req postgres.QueryParamRequest) ([]model.Sente
 		})
 	}
 
-	whereSQL := "deleted_at IS NULL"
+	whereSQL := "s.deleted_at IS NULL"
 	if strings.TrimSpace(filterSQL) != "" {
 		whereSQL += " AND " + filterSQL
 	}
 
-	items := []model.Sentence{}
+	items := []model.SentenceWithAnalysis{}
 	query := fmt.Sprintf(`
-		SELECT id, text, source, category, review_count, review_interval, ease_factor,
-		       last_rating, last_reviewed_at, next_review_at, created_at, deleted_at
-		FROM tbl_sentences
+		SELECT s.id AS sentence_id, s.text, s.source, s.category, s.review_count, s.review_interval,
+		       s.ease_factor, s.last_rating, s.last_reviewed_at, s.next_review_at, s.created_at,
+		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at
+		FROM tbl_sentences s
+		LEFT JOIN LATERAL (
+			SELECT id, explanation, vocabulary, grammar_focus, example, created_at
+			FROM tbl_analyses
+			WHERE sentence_id = s.id AND deleted_at IS NULL
+			ORDER BY created_at DESC
+			LIMIT 1
+		) a ON true
 		WHERE %s
 		%s
 		%s

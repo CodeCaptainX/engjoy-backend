@@ -7,9 +7,12 @@ CREATE TABLE IF NOT EXISTS tbl_users (
     id BIGSERIAL PRIMARY KEY,
     uuid UUID NOT NULL UNIQUE DEFAULT gen_random_uuid(),
     status_id BIGINT NOT NULL DEFAULT 1,
+    "order" INTEGER NOT NULL DEFAULT 0,
     name TEXT NOT NULL DEFAULT '',
     email TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
+    password_hash TEXT,
+    google_id TEXT UNIQUE,
+    login_session TEXT,
     role_id BIGINT NOT NULL DEFAULT 2 REFERENCES tbl_roles(id),
     last_login_at TIMESTAMPTZ,
     created_by BIGINT,
@@ -19,12 +22,6 @@ CREATE TABLE IF NOT EXISTS tbl_users (
     deleted_by BIGINT,
     deleted_at TIMESTAMPTZ
 );
-
-CREATE INDEX IF NOT EXISTS idx_tbl_users_email ON tbl_users(LOWER(email));
-CREATE INDEX IF NOT EXISTS idx_tbl_users_deleted_at ON tbl_users(deleted_at);
-CREATE INDEX IF NOT EXISTS idx_tbl_users_uuid ON tbl_users(uuid);
-CREATE INDEX IF NOT EXISTS idx_tbl_users_status_id ON tbl_users(status_id);
-CREATE INDEX IF NOT EXISTS idx_tbl_users_role_id ON tbl_users(role_id);
 
 INSERT INTO tbl_users (
     name,

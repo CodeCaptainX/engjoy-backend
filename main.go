@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+	"path/filepath"
 
 	config "sentenceminer/config"
 	"sentenceminer/config/database"
+	"sentenceminer/config/db"
 	"sentenceminer/handler"
 	"sentenceminer/routers"
 )
@@ -14,14 +16,15 @@ func main() {
 	cfg := config.NewConfig()
 
 	dbPool := database.Connect(cfg.DatabaseURL)
-	// if err := db.ApplySchema(context.Background(), dbPool, filepath.Join("config", "db", "schema.sql")); err != nil {
-	// 	log.Fatalf("apply schema error: %v", err)
-	// }
+	if err := db.RunMigrations(dbPool, filepath.Join("config", "db", "migrations")); err != nil {
+		log.Fatalf("migrations error: %v", err)
+	}
 
 	app := routers.New()
 
 	handler.RegisterRoutes(app, handler.RouteDependencies{
-		DB: dbPool,
+		DB:     dbPool,
+		Config: cfg,
 	})
 
 	addr := fmt.Sprintf("%s:%s", cfg.AppHost, cfg.AppPort)

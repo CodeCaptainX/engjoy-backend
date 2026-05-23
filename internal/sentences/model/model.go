@@ -14,6 +14,7 @@ type Sentence struct {
 	ReviewCount    int        `db:"review_count" json:"review_count"`
 	ReviewInterval int        `db:"review_interval" json:"review_interval"`
 	EaseFactor     float64    `db:"ease_factor" json:"ease_factor"`
+	Order          int        `db:"order" json:"order"`
 	LastRating     *string    `db:"last_rating" json:"last_rating,omitempty"`
 	LastReviewedAt *time.Time `db:"last_reviewed_at" json:"last_reviewed_at,omitempty"`
 	NextReviewAt   *time.Time `db:"next_review_at" json:"next_review_at,omitempty"`
@@ -43,6 +44,7 @@ type SentenceWithAnalysis struct {
 	ReviewCount    int        `db:"review_count" json:"review_count"`
 	ReviewInterval int        `db:"review_interval" json:"review_interval"`
 	EaseFactor     float64    `db:"ease_factor" json:"ease_factor"`
+	Order          int        `db:"order" json:"order"`
 	LastRating     *string    `db:"last_rating" json:"last_rating,omitempty"`
 	LastReviewedAt *time.Time `db:"last_reviewed_at" json:"last_reviewed_at,omitempty"`
 	NextReviewAt   *time.Time `db:"next_review_at" json:"next_review_at,omitempty"`

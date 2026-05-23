@@ -1,6 +1,9 @@
 package service
 
 import (
+	"context"
+	"fmt"
+	"log"
 	"strings"
 	"sync"
 	"time"
@@ -33,11 +36,11 @@ func (s *SentenceService) Create(req model.CreateSentenceRequest) (*model.Senten
 	return s.repo.Create(strings.TrimSpace(req.Text), req.Source, req.Category)
 }
 
-func (s *SentenceService) Show(req postgres.QueryParamRequest) ([]model.Sentence, int, *apiresponse.ErrorResponse) {
+func (s *SentenceService) Show(req postgres.QueryParamRequest) ([]model.SentenceWithAnalysis, int, *apiresponse.ErrorResponse) {
 	return s.repo.Show(req)
 }
 
-func (s *SentenceService) List() ([]model.Sentence, error) {
+func (s *SentenceService) List() ([]model.SentenceWithAnalysis, error) {
 	items, _, err := s.repo.Show(postgres.QueryParamRequest{})
 	if err != nil {
 		return nil, err.Err
@@ -67,4 +70,55 @@ func (s *SentenceService) RateSentenceReview(id int64, rating string) (model.Sen
 
 func (s *SentenceService) SoftDeleteSentence(id int64) (time.Time, error) {
 	return s.repo.SoftDeleteSentence(id)
+}
+
+func (s *SentenceService) GenerateAndSaveSentences(ctx context.Context, category, focus string, count int) ([]model.Sentence, error) {
+	if remaining := s.geminiCooldownRemaining(); remaining > 0 {
+		return nil, fmt.Errorf("gemini is on cooldown, try again in %v", remaining)
+	}
+
+	normalizedCategory := strings.TrimSpace(strings.ToLower(category))
+	if normalizedCategory == "" {
+		normalizedCategory = "general"
+	}
+
+	existingTexts, err := s.repo.ListCategoryTexts(normalizedCategory, 100)
+	if err != nil {
+		return nil, err
+	}
+
+	generatedTexts, err := s.client.GenerateCategorySentences(ctx, normalizedCategory, focus, existingTexts, count)
+	if err != nil {
+		if geminiFailureReason(err) == "quota" {
+			s.startGeminiCooldown(1 * time.Hour)
+		}
+		return nil, err
+	}
+
+	return s.repo.InsertGeneratedSentences(normalizedCategory, "ai-generated-flexible", generatedTexts)
+}
+
+func (s *SentenceService) StartDailyGenerationWorker() {
+	ticker := time.NewTicker(24 * time.Hour)
+	go func() {
+		for {
+			// Initial delay if needed or run immediately on first start
+			// For now, let's just wait for the first tick
+			<-ticker.C
+			log.Println("[SentenceMiner] starting automatic daily sentence generation...")
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+			_, err := s.GenerateAndSaveSentences(ctx, "general", "", 20)
+			cancel()
+			if err != nil {
+				log.Printf("[SentenceMiner] daily generation failed: %v", err)
+				// If quota error, we could retry in 1 hour
+				if strings.Contains(strings.ToLower(err.Error()), "quota") {
+					time.Sleep(1 * time.Hour)
+					ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+					_, _ = s.GenerateAndSaveSentences(ctx, "general", "", 20)
+					cancel()
+				}
+			}
+		}
+	}()
 }

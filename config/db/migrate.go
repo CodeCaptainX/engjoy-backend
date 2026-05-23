@@ -1,45 +1,107 @@
 package db
 
 import (
-	"bytes"
-	"context"
+	"fmt"
 	"os"
+	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/jmoiron/sqlx"
 )
 
-func ApplySchema(ctx context.Context, db *sqlx.DB, schemaPath string) error {
-	content, err := os.ReadFile(schemaPath)
+func RunMigrations(db *sqlx.DB, migrationsDir string) error {
+	files, err := filepath.Glob(filepath.Join(migrationsDir, "*.sql"))
 	if err != nil {
 		return err
 	}
+	sort.Strings(files)
 
-	statements := splitSQL(string(content))
-	for _, stmt := range statements {
-		if strings.TrimSpace(stmt) == "" {
+	for _, file := range files {
+		content, err := os.ReadFile(file)
+		if err != nil {
+			return err
+		}
+
+		upPart := extractUpPart(string(content))
+		if upPart == "" {
 			continue
 		}
-		if _, err := db.ExecContext(ctx, stmt); err != nil {
-			return err
+
+		// Split by Statement markers if present, or just run the whole thing
+		// Simple approach: just run the whole Up block as one or multiple statements
+		if strings.Contains(upPart, "-- +goose StatementBegin") {
+			statements := extractStatements(upPart)
+			for _, stmt := range statements {
+				if strings.TrimSpace(stmt) == "" {
+					continue
+				}
+				if _, err := db.Exec(stmt); err != nil {
+					return fmt.Errorf("error in %s: %v", file, err)
+				}
+			}
+		} else {
+			if _, err := db.Exec(upPart); err != nil {
+				return fmt.Errorf("error in %s: %v", file, err)
+			}
 		}
 	}
 	return nil
 }
 
-func splitSQL(sql string) []string {
-	var out []string
-	var buf bytes.Buffer
-	for _, r := range sql {
-		if r == ';' {
-			out = append(out, buf.String())
-			buf.Reset()
+func extractUpPart(content string) string {
+	lines := strings.Split(content, "\n")
+	var upLines []string
+	isUp := false
+
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "-- +goose Up") {
+			isUp = true
 			continue
 		}
-		buf.WriteRune(r)
+		if strings.HasPrefix(trimmed, "-- +goose Down") {
+			break
+		}
+		if isUp {
+			if strings.HasPrefix(trimmed, "-- +goose") && !strings.HasPrefix(trimmed, "-- +goose Statement") {
+				continue
+			}
+			upLines = append(upLines, line)
+		}
 	}
-	if buf.Len() > 0 {
-		out = append(out, buf.String())
+
+	return strings.Join(upLines, "\n")
+}
+
+func extractStatements(upPart string) []string {
+	var statements []string
+	lines := strings.Split(upPart, "\n")
+	var currentStmt []string
+	inStatement := false
+
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "-- +goose StatementBegin") {
+			inStatement = true
+			continue
+		}
+		if strings.HasPrefix(trimmed, "-- +goose StatementEnd") {
+			inStatement = false
+			statements = append(statements, strings.Join(currentStmt, "\n"))
+			currentStmt = nil
+			continue
+		}
+		if inStatement {
+			currentStmt = append(currentStmt, line)
+		} else if trimmed != "" && !strings.HasPrefix(trimmed, "--") {
+			// Outside statement blocks, we might have simple statements
+			// But for simplicity with goose files, we usually expect blocks or simple SQL
+			currentStmt = append(currentStmt, line)
+		}
 	}
-	return out
+	if len(currentStmt) > 0 {
+		statements = append(statements, strings.Join(currentStmt, "\n"))
+	}
+	return statements
 }

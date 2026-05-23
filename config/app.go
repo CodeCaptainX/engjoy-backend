@@ -8,13 +8,17 @@ import (
 )
 
 type AppConfig struct {
-	AppHost        string
-	AppPort        string
-	DatabaseURL    string
-	GeminiAPIKey   string
-	GeminiModel    string
-	GeminiTTSModel string
-	GeminiBase     string
+	AppHost            string
+	AppPort            string
+	DatabaseURL        string
+	GeminiAPIKey       string
+	GeminiModel        string
+	GeminiTTSModel     string
+	GeminiBase         string
+	GoogleClientID     string
+	GoogleClientSecret string
+	GoogleRedirectURL  string
+	JWTSecret          string
 }
 
 // NewConfig loads .env and returns AppConfig
@@ -26,13 +30,17 @@ func NewConfig() AppConfig {
 	}
 
 	return AppConfig{
-		AppHost:        getEnv("APP_HOST", "0.0.0.0"),
-		AppPort:        getEnv("APP_PORT", "8080"),
-		DatabaseURL:    getEnv("DATABASE_URL", "postgres://postgres:123456@localhost:5432/sentence_miner?sslmode=disable"),
-		GeminiAPIKey:   getEnv("GEMINI_API_KEY", ""),
-		GeminiModel:    getEnv("GEMINI_MODEL", "gemini-1.5-flash"),
-		GeminiTTSModel: getEnv("GEMINI_TTS_MODEL", "gemini-3.1-flash-tts-preview"),
-		GeminiBase:     getEnv("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta"),
+		AppHost:            getEnv("APP_HOST", "0.0.0.0"),
+		AppPort:            getEnv("APP_PORT", "8080"),
+		DatabaseURL:        getEnv("DATABASE_URL", "postgres://postgres:123456@localhost:5432/sentence_miner?sslmode=disable"),
+		GeminiAPIKey:       getEnv("GEMINI_API_KEY", ""),
+		GeminiModel:        getEnv("GEMINI_MODEL", "gemini-1.5-flash"),
+		GeminiTTSModel:     getEnv("GEMINI_TTS_MODEL", "gemini-3.1-flash-tts-preview"),
+		GeminiBase:         getEnv("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta"),
+		GoogleClientID:     getEnv("GOOGLE_CLIENT_ID", ""),
+		GoogleClientSecret: getEnv("GOOGLE_CLIENT_SECRET", ""),
+		GoogleRedirectURL:  getEnv("GOOGLE_REDIRECT_URL", "http://localhost:8080/api/auth/google/callback"),
+		JWTSecret:          getEnv("JWT_SECRET", "your-super-secret-key"),
 	}
 }
 

@@ -201,17 +201,36 @@ func (h *SentenceHandler) deleteSentence(c *fiber.Ctx) error {
 
 	deletedAt, err := h.service.SoftDeleteSentence(id)
 	if err != nil {
-		if errors.Is(err, repository.ErrSentenceNotFound) {
+		if err == repository.ErrSentenceNotFound {
 			return fiber.NewError(fiber.StatusNotFound, "sentence not found")
 		}
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.NewResponse("sentence deleted", fiber.StatusOK, fiber.Map{
-		"status":     "deleted",
-		"sentenceId": id,
-		"deletedAt":  deletedAt,
-	}))
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse("sentence deleted", fiber.StatusOK, fiber.Map{"deleted_at": deletedAt}))
+}
+
+func (h *SentenceHandler) generateSentences(c *fiber.Ctx) error {
+	var req struct {
+		Category string `json:"category"`
+		Count    int    `json:"count"`
+		Focus    string `json:"focus"`
+	}
+
+	if err := c.BodyParser(&req); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "invalid request")
+	}
+
+	if req.Count <= 0 {
+		req.Count = 20
+	}
+
+	sentences, err := h.service.GenerateAndSaveSentences(c.Context(), req.Category, req.Focus, req.Count)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse("sentences generated", fiber.StatusOK, fiber.Map{"count": len(sentences), "sentences": sentences}))
 }
 
 func sanitizeLogValue(value string) string {

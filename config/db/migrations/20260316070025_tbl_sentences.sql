@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS tbl_sentences (
     id BIGSERIAL PRIMARY KEY,
     uuid UUID NOT NULL UNIQUE DEFAULT gen_random_uuid(),
     status_id BIGINT NOT NULL DEFAULT 1,
+    "order" INTEGER NOT NULL DEFAULT 0,
     text TEXT NOT NULL,
     source TEXT NOT NULL DEFAULT 'extension',
     category TEXT NOT NULL DEFAULT 'general',

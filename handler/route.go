@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"sentenceminer/config"
+	"sentenceminer/internal/auth"
 	"sentenceminer/internal/sentences"
 	"sentenceminer/internal/user"
 	response "sentenceminer/pkg/http/response"
@@ -10,7 +12,8 @@ import (
 )
 
 type RouteDependencies struct {
-	DB *sqlx.DB
+	DB     *sqlx.DB
+	Config config.AppConfig
 }
 
 func RegisterRoutes(app *fiber.App, deps RouteDependencies) {
@@ -20,6 +23,9 @@ func RegisterRoutes(app *fiber.App, deps RouteDependencies) {
 		return c.Status(fiber.StatusOK).JSON(response.NewResponse("health ok", fiber.StatusOK, fiber.Map{"status": "ok"}))
 	})
 
-	sentences.RegisterRoutes(app, deps.DB)
+	sentenceSvc := sentences.RegisterRoutes(app, deps.DB, deps.Config.JWTSecret)
+	sentenceSvc.StartDailyGenerationWorker()
+
 	user.RegisterRoutes(app, deps.DB)
+	auth.RegisterRoutes(app, deps.DB)
 }

@@ -12,8 +12,8 @@ import (
 )
 
 type PaginationOptions struct {
-	PerPage int `json:"perPage" query:"per_page" validate:"required,min=1"`
-	Page    int `json:"page" query:"page" validate:"required,min=1"`
+	PerPage int `json:"perPage" query:"per_page" validate:"min=0"`
+	Page    int `json:"page" query:"page" validate:"min=0"`
 }
 
 type Filter struct {
@@ -27,7 +27,7 @@ type Sort struct {
 }
 
 type QueryParamRequest struct {
-	PagingOptions PaginationOptions `json:"pagingOptions" query:"paging_options" validate:"required"`
+	PagingOptions PaginationOptions `json:"pagingOptions" query:"paging_options"`
 	Filters       []Filter          `json:"filters" query:"filters"`
 	Sorts         []Sort            `json:"sorts" query:"sorts"`
 	Offset        int               `json:"offset" query:"offset"`
@@ -43,8 +43,25 @@ type ResponseWithPagination struct {
 }
 
 func parsePaginationOptions(c *fiber.Ctx) PaginationOptions {
-	perPage, _ := strconv.Atoi(c.Query("paging_options[per_page]", "10"))
-	page, _ := strconv.Atoi(c.Query("paging_options[page]", "1"))
+	perPageStr := c.Query("per_page")
+	if perPageStr == "" {
+		perPageStr = c.Query("paging_options[per_page]", "10")
+	}
+	perPage, _ := strconv.Atoi(perPageStr)
+
+	pageStr := c.Query("page")
+	if pageStr == "" {
+		pageStr = c.Query("paging_options[page]", "1")
+	}
+	page, _ := strconv.Atoi(pageStr)
+
+	if perPage <= 0 {
+		perPage = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+
 	return PaginationOptions{
 		PerPage: perPage,
 		Page:    page,
