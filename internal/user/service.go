@@ -19,15 +19,15 @@ func (s *Service) TouchLastLogin(id int64, at time.Time) error {
 	return s.repo.TouchLastLogin(id, at)
 }
 
-func (s *Service) AddFavorite(ctx context.Context, userID, sentenceID int64) error {
-	return s.repo.AddFavorite(userID, sentenceID)
+func (s *Service) AddFavorite(ctx context.Context, userID int64, sentenceUUID string) error {
+	return s.repo.AddFavorite(userID, sentenceUUID)
 }
 
-func (s *Service) RemoveFavorite(ctx context.Context, userID, sentenceID int64) error {
-	return s.repo.RemoveFavorite(userID, sentenceID)
+func (s *Service) RemoveFavorite(ctx context.Context, userID int64, sentenceUUID string) error {
+	return s.repo.RemoveFavorite(userID, sentenceUUID)
 }
 
-func (s *Service) GetFavorites(ctx context.Context, userID int64) ([]int64, error) {
+func (s *Service) GetFavorites(ctx context.Context, userID int64) ([]string, error) {
 	return s.repo.ListFavorites(userID)
 }
 

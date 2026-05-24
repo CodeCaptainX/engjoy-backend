@@ -29,7 +29,7 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.NewResponse("login successful", fiber.StatusOK, loginResponse))
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "login successful", fiber.StatusOK, loginResponse))
 }
 
 func (h *Handler) GoogleLogin(c *fiber.Ctx) error {
@@ -45,12 +45,27 @@ func (h *Handler) GoogleCallback(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "missing code")
 	}
 
-	// Verify state here if we stored it
-
 	loginResp, err := h.service.HandleGoogleCallback(c.Context(), code)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.NewResponse("login successful", fiber.StatusOK, loginResp))
+	// HTML template to postMessage and close
+	html := `
+	<!DOCTYPE html>
+	<html>
+	<body>
+		<script>
+			window.opener.postMessage({
+				type: "AUTH_SUCCESS",
+				token: "` + loginResp.Token + `",
+				user: ` + `{"uuid":"` + loginResp.User.UUID + `","name":"` + loginResp.User.Name + `"}` + `
+			}, "*");
+			window.close();
+		</script>
+	</body>
+	</html>
+	`
+	c.Set("Content-Type", "text/html")
+	return c.Status(fiber.StatusOK).SendString(html)
 }

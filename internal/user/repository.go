@@ -92,40 +92,43 @@ func (r *Repository) UpdateLoginSession(id int64, session string) error {
 	return err
 }
 
-func (r *Repository) AddFavorite(userID, sentenceID int64) error {
+func (r *Repository) AddFavorite(userID int64, sentenceUUID string) error {
 	_, err := r.db.Exec(
 		`INSERT INTO tbl_users_sentences_favourites (user_id, sentence_id)
-		 VALUES ($1, $2)
+		 SELECT $1, id FROM tbl_sentences WHERE uuid = $2
 		 ON CONFLICT (user_id, sentence_id) DO NOTHING`,
 		userID,
-		sentenceID,
+		sentenceUUID,
 	)
 	return err
 }
 
-func (r *Repository) RemoveFavorite(userID, sentenceID int64) error {
+func (r *Repository) RemoveFavorite(userID int64, sentenceUUID string) error {
 	_, err := r.db.Exec(
 		`UPDATE tbl_users_sentences_favourites
 		 SET deleted_at = NOW()
-		 WHERE user_id = $1 AND sentence_id = $2 AND deleted_at IS NULL`,
+		 WHERE user_id = $1 
+		 AND sentence_id = (SELECT id FROM tbl_sentences WHERE uuid = $2) 
+		 AND deleted_at IS NULL`,
 		userID,
-		sentenceID,
+		sentenceUUID,
 	)
 	return err
 }
 
-func (r *Repository) ListFavorites(userID int64) ([]int64, error) {
-	var ids []int64
+func (r *Repository) ListFavorites(userID int64) ([]string, error) {
+	var uuids []string
 	err := r.db.Select(
-		&ids,
-		`SELECT sentence_id
-		 FROM tbl_users_sentences_favourites
-		 WHERE user_id = $1 AND deleted_at IS NULL
-		 ORDER BY created_at DESC`,
+		&uuids,
+		`SELECT s.uuid
+		 FROM tbl_users_sentences_favourites f
+		 JOIN tbl_sentences s ON f.sentence_id = s.id
+		 WHERE f.user_id = $1 AND f.deleted_at IS NULL
+		 ORDER BY f.created_at DESC`,
 		userID,
 	)
 	if err != nil {
 		return nil, err
 	}
-	return ids, nil
+	return uuids, nil
 }

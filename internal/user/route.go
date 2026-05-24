@@ -17,7 +17,7 @@ func RegisterRoutes(app *fiber.App, db *sqlx.DB) {
 	user := app.Group("/api/user")
 
 	favorites := user.Group("/favorites", middleware.AuthMiddleware(cfg.JWTSecret))
-	favorites.Post("/add", handler.AddFavorite)
-	favorites.Post("/remove", handler.RemoveFavorite)
-	favorites.Get("/:userId", handler.GetFavorites)
+	favorites.Post("/", handler.AddFavorite)
+	favorites.Delete("/:sentenceUuid", handler.RemoveFavorite)
+	favorites.Get("/", handler.GetFavorites)
 }

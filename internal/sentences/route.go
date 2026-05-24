@@ -24,6 +24,16 @@ func RegisterRoutes(app *fiber.App, db *sqlx.DB, jwtSecret string) *service.Sent
 	admin := api.Group("/admin", middleware.AuthMiddleware(jwtSecret))
 	admin.Post("/generate-sentences", sentenceHandler.generateSentences)
 
+	// Favorites Routes
+	favorites := api.Group("/favorites", middleware.AuthMiddleware(jwtSecret))
+	favorites.Post("/", sentenceHandler.addFavorite)
+	favorites.Delete("/:sentenceUuid", sentenceHandler.removeFavorite)
+	favorites.Get("/", sentenceHandler.showFavorites)
+
+	// Reactions Routes
+	api.Post("/sentences/:sentenceUuid/reaction", middleware.AuthMiddleware(jwtSecret), sentenceHandler.toggleReaction)
+	api.Get("/sentences/:sentenceUuid/reactions", sentenceHandler.getReactionCount)
+
 	api.Post("/sentence", sentenceHandler.createSentence)
 	api.Get("/sentence", sentenceHandler.show)
 	api.Get("/sentence/:id", sentenceHandler.getSentence)

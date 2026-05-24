@@ -69,7 +69,27 @@ func (s *SentenceService) RateSentenceReview(id int64, rating string) (model.Sen
 }
 
 func (s *SentenceService) SoftDeleteSentence(id int64) (time.Time, error) {
-	return s.repo.SoftDeleteSentence(id)
+	return s.repo.SoftDelete(id)
+}
+
+func (s *SentenceService) AddFavorite(userID int64, sentenceUUID string) error {
+	return s.repo.AddFavorite(userID, sentenceUUID)
+}
+
+func (s *SentenceService) RemoveFavorite(userID int64, sentenceUUID string) error {
+	return s.repo.RemoveFavorite(userID, sentenceUUID)
+}
+
+func (s *SentenceService) ListFavorites(userID int64, req postgres.QueryParamRequest) ([]model.SentenceWithAnalysis, int, error) {
+	return s.repo.ListFavorites(userID, req)
+}
+
+func (s *SentenceService) ToggleReaction(userID int64, sentenceUUID string, reactionType string) error {
+	return s.repo.ToggleReaction(userID, sentenceUUID, reactionType)
+}
+
+func (s *SentenceService) GetReactionCount(sentenceUUID string, reactionType string) (int, error) {
+	return s.repo.GetReactionCount(sentenceUUID, reactionType)
 }
 
 func (s *SentenceService) GenerateAndSaveSentences(ctx context.Context, category, focus string, count int) ([]model.Sentence, error) {

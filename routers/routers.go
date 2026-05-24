@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 
+	"sentenceminer/pkg/middleware"
 	response "sentenceminer/pkg/http/response"
 
 	"github.com/gofiber/fiber/v2"
@@ -30,6 +31,7 @@ func New() *fiber.App {
 	})
 
 	app.Use(logger.New())
+	app.Use(middleware.I18nMiddleware())
 	
 	// CORS: Restricted to our website origin to prevent third-party API abuse.
 	// You should set ALLOWED_ORIGINS in your .env file.

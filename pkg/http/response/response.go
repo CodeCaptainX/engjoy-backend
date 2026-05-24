@@ -1,6 +1,10 @@
 package response
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"sentenceminer/pkg/i18n"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 type Response struct {
 	Success    bool        `json:"success"`
@@ -9,17 +13,18 @@ type Response struct {
 	Data       interface{} `json:"data"`
 }
 
-func NewResponse(message string, statusCode int, data interface{}) Response {
+func NewResponse(c *fiber.Ctx, key string, statusCode int, data interface{}) Response {
+	lang := c.Locals("lang").(string)
 	return Response{
 		Success:    true,
-		Message:    message,
+		Message:    i18n.Translate(key, lang),
 		StatusCode: statusCode,
 		Data:       data,
 	}
 }
 
-func JSON(c *fiber.Ctx, statusCode int, message string, data interface{}) error {
-	return c.Status(statusCode).JSON(NewResponse(message, statusCode, data))
+func JSON(c *fiber.Ctx, statusCode int, key string, data interface{}) error {
+	return c.Status(statusCode).JSON(NewResponse(c, key, statusCode, data))
 }
 
 type ResponseWithPaging struct {
@@ -32,10 +37,11 @@ type ResponseWithPaging struct {
 	Total      int         `json:"total"`
 }
 
-func NewResponseWithPaging(message string, statusCode int, data interface{}, page int, limit int, total int) ResponseWithPaging {
+func NewResponseWithPaging(c *fiber.Ctx, key string, statusCode int, data interface{}, page int, limit int, total int) ResponseWithPaging {
+	lang := c.Locals("lang").(string)
 	return ResponseWithPaging{
 		Success:    true,
-		Message:    message,
+		Message:    i18n.Translate(key, lang),
 		StatusCode: statusCode,
 		Data:       data,
 		Page:       page,
@@ -44,6 +50,6 @@ func NewResponseWithPaging(message string, statusCode int, data interface{}, pag
 	}
 }
 
-func JSONWithPaging(c *fiber.Ctx, statusCode int, message string, data interface{}, page int, limit int, total int) error {
-	return c.Status(statusCode).JSON(NewResponseWithPaging(message, statusCode, data, page, limit, total))
+func JSONWithPaging(c *fiber.Ctx, statusCode int, key string, data interface{}, page int, limit int, total int) error {
+	return c.Status(statusCode).JSON(NewResponseWithPaging(c, key, statusCode, data, page, limit, total))
 }

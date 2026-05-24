@@ -28,15 +28,21 @@ This project is the backend for Engjoy, a language learning application focused 
 - **File Organization**: 
     - For simple modules, use single files (e.g., `handler.go`).
     - For complex modules with many functions, create directories (e.g., `handler/`, `service/`) and split logic into separate files (e.g., `handler/user_handler.go`, `handler/admin_handler.go`).
-- **Naming Convention**: Use the following names for standard CRUD-like operations:
-    - `show`: List multiple records.
-    - `showOne`: Fetch a single record.
-    - `update`: Modify an existing record.
-    - `delete`: Remove a record.
+- **Naming Convention (CRUD Operations)**:
+    - `show`: List multiple records (GET).
+    - `showOne`: Fetch a single record (GET).
+    - `update`: Modify an existing record (PATCH).
+    - `delete`: Remove a record (DELETE).
+- **RESTful API Standards**:
+    - Creation: Use `POST`.
+    - Updates: Use `PATCH`.
+    - Deletion: Use `DELETE`.
+    - Avoid redundant verbs (e.g., "add", "remove") in path. Use resource names (e.g., `POST /api/user/favorites`).
+- **Identifiers**: ALWAYS use `uuid` as the resource reference. DO NOT use numeric `id` in requests.
+- **Authentication**: `user_id` MUST be extracted from the JWT token. DO NOT include it in requests.
 - **Errors**: Standardized JSON error responses via `pkg/http/response`.
 - **Logging**: Uses `rs/zerolog`.
-- **Auth**: Currently uses placeholder 32-byte hex tokens.
-- **Context Usage**: `context.Context` should ONLY be used for Redis operations or External API calls (like Gemini). Do NOT use it for database queries.
+- **Context Usage**: `context.Context` should ONLY be used for Redis operations or External API calls. Do NOT use it for database queries.
 
 ## Database Rules
 - **Table Naming**: Every table name MUST start with the `tbl_` prefix.

@@ -37,7 +37,7 @@ func (h *SentenceHandler) analyzeSentence(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.NewResponse("sentence analyzed", fiber.StatusOK, fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "sentence analyzed", fiber.StatusOK, fiber.Map{
 		"sentence": sentence,
 		"analysis": analysis,
 	}))
@@ -58,7 +58,7 @@ func (h *SentenceHandler) createSentence(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(response.NewResponse("sentence created", fiber.StatusCreated, fiber.Map{
+	return c.Status(fiber.StatusCreated).JSON(response.NewResponse(c, "sentence created", fiber.StatusCreated, fiber.Map{
 		"sentence": sentence,
 	}))
 }
@@ -69,7 +69,7 @@ func (h *SentenceHandler) importEnvironmentPack(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.NewResponse("environment pack imported", fiber.StatusOK, fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "environment pack imported", fiber.StatusOK, fiber.Map{
 		"status":   "ok",
 		"imported": imported,
 	}))
@@ -102,7 +102,7 @@ func (h *SentenceHandler) getSentence(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.NewResponse("sentence fetched", fiber.StatusOK, fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "sentence fetched", fiber.StatusOK, fiber.Map{
 		"sentence": sentence,
 	}))
 }
@@ -122,7 +122,7 @@ func (h *SentenceHandler) categoryFeed(c *fiber.Ctx) error {
 
 	items, generated, err := h.service.GetCategoryFeed(c.Context(), req.Category, req.Focus, req.ExcludeIDs, req.Limit)
 	if err != nil {
-		return c.Status(fiber.StatusOK).JSON(response.NewResponse("category feed fetched with error", fiber.StatusOK, fiber.Map{
+		return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "category feed fetched with error", fiber.StatusOK, fiber.Map{
 			"sentences": []any{},
 			"generated": 0,
 			"hasMore":   false,
@@ -130,7 +130,7 @@ func (h *SentenceHandler) categoryFeed(c *fiber.Ctx) error {
 		}))
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.NewResponse("category feed fetched", fiber.StatusOK, fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "category feed fetched", fiber.StatusOK, fiber.Map{
 		"sentences": items,
 		"generated": generated,
 		"hasMore":   len(items) == req.Limit || generated > 0,
@@ -161,7 +161,7 @@ func (h *SentenceHandler) rateSentenceReview(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.NewResponse("sentence review updated", fiber.StatusOK, fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "sentence review updated", fiber.StatusOK, fiber.Map{
 		"sentence": sentence,
 	}))
 }
@@ -207,8 +207,82 @@ func (h *SentenceHandler) deleteSentence(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.NewResponse("sentence deleted", fiber.StatusOK, fiber.Map{"deleted_at": deletedAt}))
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "sentence deleted", fiber.StatusOK, fiber.Map{"deleted_at": deletedAt}))
 }
+
+func (h *SentenceHandler) addFavorite(c *fiber.Ctx) error {
+	userID := c.Locals("userID").(int64)
+
+	var req struct {
+		SentenceUUID string `json:"sentenceUuid"`
+	}
+	if err := c.BodyParser(&req); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "invalid request")
+	}
+
+	if err := h.service.AddFavorite(userID, req.SentenceUUID); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "favorite added", fiber.StatusOK, nil))
+}
+
+func (h *SentenceHandler) removeFavorite(c *fiber.Ctx) error {
+	userID := c.Locals("userID").(int64)
+	sentenceUUID := c.Params("sentenceUuid")
+
+	if err := h.service.RemoveFavorite(userID, sentenceUUID); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "favorite removed", fiber.StatusOK, nil))
+}
+
+func (h *SentenceHandler) showFavorites(c *fiber.Ctx) error {
+	userID := c.Locals("userID").(int64)
+	req, err := postgres.ExtractQueryParamsRequest(c)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "invalid request")
+	}
+
+	items, total, err := h.service.ListFavorites(userID, *req)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+
+	return response.JSONWithPaging(c, fiber.StatusOK, "favorites fetched", items, req.PagingOptions.Page, req.PagingOptions.PerPage, total)
+}
+
+func (h *SentenceHandler) toggleReaction(c *fiber.Ctx) error {
+	userID := c.Locals("userID").(int64)
+	sentenceUUID := c.Params("sentenceUuid")
+	
+	var req struct {
+		ReactionType string `json:"reactionType"`
+	}
+	if err := c.BodyParser(&req); err != nil || req.ReactionType == "" {
+		req.ReactionType = "heart" // default
+	}
+
+	if err := h.service.ToggleReaction(userID, sentenceUUID, req.ReactionType); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "reaction toggled", fiber.StatusOK, nil))
+}
+
+func (h *SentenceHandler) getReactionCount(c *fiber.Ctx) error {
+	sentenceUUID := c.Params("sentenceUuid")
+	reactionType := c.Query("type", "heart")
+
+	count, err := h.service.GetReactionCount(sentenceUUID, reactionType)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "reaction count fetched", fiber.StatusOK, fiber.Map{"count": count}))
+}
+
 
 func (h *SentenceHandler) generateSentences(c *fiber.Ctx) error {
 	var req struct {
@@ -230,7 +304,7 @@ func (h *SentenceHandler) generateSentences(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.NewResponse("sentences generated", fiber.StatusOK, fiber.Map{"count": len(sentences), "sentences": sentences}))
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "sentences generated", fiber.StatusOK, fiber.Map{"count": len(sentences), "sentences": sentences}))
 }
 
 func sanitizeLogValue(value string) string {

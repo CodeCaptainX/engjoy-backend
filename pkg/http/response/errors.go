@@ -61,12 +61,16 @@ func (e *ErrorResponse) NewErrorResponse(messageID string, err error, StatusCode
 }
 
 func ApiResponseError(success bool, message string, statusCode int, err error) APIErrorResponse {
+	errMsg := ""
+	if err != nil {
+		errMsg = err.Error()
+	}
 	return APIErrorResponse{
 		Success:    success,
 		Message:    message,
 		StatusCode: statusCode,
 		Data: ErrorData{
-			Error: err.Error(),
+			Error: errMsg,
 		},
 	}
 }

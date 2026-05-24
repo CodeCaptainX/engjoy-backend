@@ -416,49 +416,81 @@ func normalizeCategory(category string) string {
 	return value
 }
 
-func (r *SentenceRepository) SoftDeleteSentence(id int64) (time.Time, error) {
-	tx, err := r.db.Beginx()
-	if err != nil {
-		return time.Time{}, err
-	}
-	defer func() {
-		if err != nil {
-			_ = tx.Rollback()
-		}
-	}()
-
-	var deletedAt time.Time
-	row := tx.QueryRowx(
-		`UPDATE tbl_sentences
-		SET deleted_at = NOW()
-		WHERE id = $1 AND deleted_at IS NULL
-		RETURNING deleted_at`,
-		id,
+func (r *SentenceRepository) AddFavorite(userID int64, sentenceUUID string) error {
+	_, err := r.db.Exec(
+		`INSERT INTO tbl_users_sentences_favourites (user_id, sentence_id)
+		 SELECT $1, id FROM tbl_sentences WHERE uuid = $2
+		 ON CONFLICT (user_id, sentence_id) DO NOTHING`,
+		userID,
+		sentenceUUID,
 	)
-	if scanErr := row.Scan(&deletedAt); scanErr != nil {
-		if scanErr == sql.ErrNoRows {
-			err = ErrSentenceNotFound
-			return time.Time{}, err
-		}
-		err = scanErr
-		return time.Time{}, err
+	return err
+}
+
+func (r *SentenceRepository) RemoveFavorite(userID int64, sentenceUUID string) error {
+	_, err := r.db.Exec(
+		`UPDATE tbl_users_sentences_favourites
+		 SET deleted_at = NOW()
+		 WHERE user_id = $1 
+		 AND sentence_id = (SELECT id FROM tbl_sentences WHERE uuid = $2) 
+		 AND deleted_at IS NULL`,
+		userID,
+		sentenceUUID,
+	)
+	return err
+}
+
+func (r *SentenceRepository) ToggleReaction(userID int64, sentenceUUID string, reactionType string) error {
+	var exists bool
+	err := r.db.QueryRowx(
+		`SELECT EXISTS (
+			SELECT 1 FROM tbl_sentences_reactions 
+			WHERE user_id = $1 
+			AND sentence_id = (SELECT id FROM tbl_sentences WHERE uuid = $2)
+			AND reaction_type = $3 
+			AND deleted_at IS NULL
+		)`,
+		userID,
+		sentenceUUID,
+		reactionType,
+	).Scan(&exists)
+	if err != nil {
+		return err
 	}
 
-	if _, execErr := tx.Exec(
-		`UPDATE tbl_analyses
-		SET deleted_at = $2
-		WHERE sentence_id = $1 AND deleted_at IS NULL`,
-		id,
-		deletedAt,
-	); execErr != nil {
-		err = execErr
-		return time.Time{}, err
+	if exists {
+		_, err = r.db.Exec(
+			`UPDATE tbl_sentences_reactions 
+			 SET deleted_at = NOW() 
+			 WHERE user_id = $1 
+			 AND sentence_id = (SELECT id FROM tbl_sentences WHERE uuid = $2)
+			 AND reaction_type = $3 
+			 AND deleted_at IS NULL`,
+			userID,
+			sentenceUUID,
+			reactionType,
+		)
+	} else {
+		_, err = r.db.Exec(
+			`INSERT INTO tbl_sentences_reactions (user_id, sentence_id, reaction_type)
+			 SELECT $1, id, $3 FROM tbl_sentences WHERE uuid = $2`,
+			userID,
+			sentenceUUID,
+			reactionType,
+		)
 	}
+	return err
+}
 
-	if commitErr := tx.Commit(); commitErr != nil {
-		err = commitErr
-		return time.Time{}, err
-	}
-
-	return deletedAt, nil
+func (r *SentenceRepository) GetReactionCount(sentenceUUID string, reactionType string) (int, error) {
+	var count int
+	err := r.db.Get(&count,
+		`SELECT COUNT(*) FROM tbl_sentences_reactions 
+		 WHERE sentence_id = (SELECT id FROM tbl_sentences WHERE uuid = $1)
+		 AND reaction_type = $2 
+		 AND deleted_at IS NULL`,
+		sentenceUUID,
+		reactionType,
+	)
+	return count, err
 }

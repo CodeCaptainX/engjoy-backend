@@ -20,7 +20,7 @@ func RegisterRoutes(app *fiber.App, deps RouteDependencies) {
 	api := app.Group("/api")
 
 	api.Get("/health", func(c *fiber.Ctx) error {
-		return c.Status(fiber.StatusOK).JSON(response.NewResponse("health ok", fiber.StatusOK, fiber.Map{"status": "ok"}))
+		return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "health ok", fiber.StatusOK, fiber.Map{"status": "ok"}))
 	})
 
 	sentenceSvc := sentences.RegisterRoutes(app, deps.DB, deps.Config.JWTSecret)
