@@ -212,15 +212,13 @@ func (h *SentenceHandler) deleteSentence(c *fiber.Ctx) error {
 
 func (h *SentenceHandler) addFavorite(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(int64)
-
-	var req struct {
-		SentenceUUID string `json:"sentenceUuid"`
-	}
-	if err := c.BodyParser(&req); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid request")
+	sentenceUUID := c.Query("sentenceUuid")
+	
+	if sentenceUUID == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "sentenceUuid is required")
 	}
 
-	if err := h.service.AddFavorite(userID, req.SentenceUUID); err != nil {
+	if err := h.service.AddFavorite(userID, sentenceUUID); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 

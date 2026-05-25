@@ -416,6 +416,42 @@ func normalizeCategory(category string) string {
 	return value
 }
 
+func (r *SentenceRepository) ListFavorites(userID int64, req postgres.QueryParamRequest) ([]model.SentenceWithAnalysis, int, error) {
+	var total int
+	err := r.db.Get(&total, `
+		SELECT COUNT(*)
+		FROM tbl_users_sentences_favourites f
+		WHERE f.user_id = $1 AND f.deleted_at IS NULL`,
+		userID,
+	)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	items := []model.SentenceWithAnalysis{}
+	query := `
+		SELECT s.id AS sentence_id, s.text, s.source, s.category, s.review_count, s.review_interval,
+		       s.ease_factor, s.last_rating, s.last_reviewed_at, s.next_review_at, s.created_at,
+		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at
+		FROM tbl_sentences s
+		JOIN tbl_users_sentences_favourites f ON s.id = f.sentence_id
+		LEFT JOIN LATERAL (
+			SELECT id, explanation, vocabulary, grammar_focus, example, created_at
+			FROM tbl_analyses
+			WHERE sentence_id = s.id AND deleted_at IS NULL
+			ORDER BY created_at DESC
+			LIMIT 1
+		) a ON true
+		WHERE f.user_id = $1 AND f.deleted_at IS NULL
+		ORDER BY f.created_at DESC
+		` + postgres.BuildPaging(req.PagingOptions.Page, req.PagingOptions.PerPage)
+
+	if err := r.db.Select(&items, query, userID); err != nil {
+		return nil, 0, err
+	}
+	return items, total, nil
+}
+
 func (r *SentenceRepository) AddFavorite(userID int64, sentenceUUID string) error {
 	_, err := r.db.Exec(
 		`INSERT INTO tbl_users_sentences_favourites (user_id, sentence_id)
