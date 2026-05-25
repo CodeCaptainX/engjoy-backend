@@ -8,6 +8,7 @@ import (
 
 type Sentence struct {
 	ID             int64      `db:"id" json:"id"`
+	UUID           string     `db:"uuid" json:"uuid"`
 	Text           string     `db:"text" json:"text"`
 	Source         string     `db:"source" json:"source"`
 	Category       string     `db:"category" json:"category"`
@@ -38,6 +39,7 @@ type Analysis struct {
 
 type SentenceWithAnalysis struct {
 	SentenceID     int64      `db:"sentence_id" json:"sentence_id"`
+	UUID           string     `db:"uuid" json:"uuid"`
 	Text           string     `db:"text" json:"text"`
 	Source         string     `db:"source" json:"source"`
 	Category       string     `db:"category" json:"category"`

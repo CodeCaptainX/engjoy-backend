@@ -47,7 +47,7 @@ func (r *SentenceRepository) Create(text, source, category string) (*model.Sente
 	err = tx.QueryRowx(
 		`INSERT INTO tbl_sentences (text, source, category)
 		VALUES ($1, $2, $3)
-		RETURNING id, text, source, category, review_count, review_interval, ease_factor,
+		RETURNING id, uuid, text, source, category, review_count, review_interval, ease_factor,
 		          last_rating, last_reviewed_at, next_review_at, created_at, deleted_at`,
 		strings.TrimSpace(text),
 		strings.TrimSpace(source),
@@ -93,7 +93,7 @@ func (r *SentenceRepository) Show(req postgres.QueryParamRequest) ([]model.Sente
 
 	items := []model.SentenceWithAnalysis{}
 	query := fmt.Sprintf(`
-		SELECT s.id AS sentence_id, s.text, s.source, s.category, s.review_count, s.review_interval,
+		SELECT s.id AS sentence_id, s.uuid, s.text, s.source, s.category, s.review_count, s.review_interval,
 		       s.ease_factor, s.last_rating, s.last_reviewed_at, s.next_review_at, s.created_at,
 		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at
 		FROM tbl_sentences s
@@ -141,7 +141,7 @@ func (r *SentenceRepository) Count(filterSQL string, args []interface{}) (int, e
 func (r *SentenceRepository) Get(id int64) (model.Sentence, error) {
 	var sentence model.Sentence
 	err := r.db.QueryRowx(
-		`SELECT id, text, source, category, review_count, review_interval, ease_factor,
+		`SELECT id, uuid, text, source, category, review_count, review_interval, ease_factor,
 		        last_rating, last_reviewed_at, next_review_at, created_at, deleted_at
 		FROM tbl_sentences
 		WHERE id = $1 AND deleted_at IS NULL`,

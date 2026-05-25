@@ -20,7 +20,7 @@ func (r *SentenceRepository) CreateSentence(text, source, category string) (mode
 	normalizedCategory := normalizeCategory(category)
 	err := r.db.QueryRowx(
 		`INSERT INTO tbl_sentences (text, source, category) VALUES ($1, $2, $3)
-		RETURNING id, text, source, category, review_count, review_interval, ease_factor,
+		RETURNING id, uuid, text, source, category, review_count, review_interval, ease_factor,
 		          last_rating, last_reviewed_at, next_review_at, created_at, deleted_at`,
 		text,
 		source,
@@ -130,7 +130,7 @@ func (r *SentenceRepository) InsertGeneratedSentences(category, source string, t
 			 	  AND LOWER(category) = LOWER($3)
 			 	  AND deleted_at IS NULL
 			 )
-			 RETURNING id, text, source, category, review_count, review_interval, ease_factor,
+			 RETURNING id, uuid, text, source, category, review_count, review_interval, ease_factor,
 			           last_rating, last_reviewed_at, next_review_at, created_at, deleted_at`,
 			trimmed,
 			source,
@@ -177,7 +177,7 @@ func (r *SentenceRepository) InsertStaticSentenceEntries(category, source string
 			 	  AND LOWER(category) = LOWER($3)
 			 	  AND deleted_at IS NULL
 			 )
-			 RETURNING id, text, source, category, review_count, review_interval, ease_factor,
+			 RETURNING id, uuid, text, source, category, review_count, review_interval, ease_factor,
 			           last_rating, last_reviewed_at, next_review_at, created_at, deleted_at`,
 			trimmed,
 			source,
@@ -211,7 +211,7 @@ func (r *SentenceRepository) ListRandomByCategory(category string, excludeIDs []
 	}
 
 	baseQuery := `
-		SELECT s.id AS sentence_id, s.text, s.source, s.category, s.review_count, s.review_interval,
+		SELECT s.id AS sentence_id, s.uuid, s.text, s.source, s.category, s.review_count, s.review_interval,
 		       s.ease_factor, s.last_rating, s.last_reviewed_at, s.next_review_at, s.created_at,
 		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at
 		FROM tbl_sentences s
@@ -255,7 +255,7 @@ func (r *SentenceRepository) CreateAnalysis(sentenceID int64, explanation, vocab
 	err := r.db.QueryRowx(
 		`INSERT INTO tbl_analyses (sentence_id, explanation, vocabulary, grammar_focus, example)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id, sentence_id, explanation, vocabulary, grammar_focus, example, created_at, deleted_at`,
+		RETURNING id, uuid, sentence_id, explanation, vocabulary, grammar_focus, example, created_at, deleted_at`,
 		sentenceID,
 		explanation,
 		vocabulary,
@@ -273,7 +273,7 @@ func (r *SentenceRepository) ListSentences(page int, limit int) ([]model.Sentenc
 
 	items := []model.SentenceWithAnalysis{}
 	query := `
-		SELECT s.id AS sentence_id, s.text, s.source, s.category, s.review_count, s.review_interval,
+		SELECT s.id AS sentence_id, s.uuid, s.text, s.source, s.category, s.review_count, s.review_interval,
 		       s.ease_factor, s.last_rating, s.last_reviewed_at, s.next_review_at, s.created_at,
 		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at
 		FROM tbl_sentences s
@@ -305,7 +305,7 @@ func (r *SentenceRepository) CountSentences() (int, error) {
 func (r *SentenceRepository) GetSentence(id int64) (model.Sentence, error) {
 	var s model.Sentence
 	err := r.db.QueryRowx(
-		`SELECT id, text, source, category, review_count, review_interval, ease_factor,
+		`SELECT id, uuid, text, source, category, review_count, review_interval, ease_factor,
 		        last_rating, last_reviewed_at, next_review_at, created_at, deleted_at
 		FROM tbl_sentences
 		WHERE id = $1 AND deleted_at IS NULL`,
@@ -375,7 +375,7 @@ func (r *SentenceRepository) RateSentenceReview(id int64, rating string) (model.
 		     next_review_at = $6,
 		     updated_at = NOW()
 		 WHERE id = $1 AND deleted_at IS NULL
-		 RETURNING id, text, source, category, review_count, review_interval, ease_factor,
+		 RETURNING id, uuid, text, source, category, review_count, review_interval, ease_factor,
 		           last_rating, last_reviewed_at, next_review_at, created_at, deleted_at`,
 		id,
 		nextInterval,
@@ -430,7 +430,7 @@ func (r *SentenceRepository) ListFavorites(userID int64, req postgres.QueryParam
 
 	items := []model.SentenceWithAnalysis{}
 	query := `
-		SELECT s.id AS sentence_id, s.text, s.source, s.category, s.review_count, s.review_interval,
+		SELECT s.id AS sentence_id, s.uuid, s.text, s.source, s.category, s.review_count, s.review_interval,
 		       s.ease_factor, s.last_rating, s.last_reviewed_at, s.next_review_at, s.created_at,
 		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at
 		FROM tbl_sentences s
