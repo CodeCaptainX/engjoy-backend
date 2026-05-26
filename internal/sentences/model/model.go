@@ -60,9 +60,10 @@ type SentenceWithAnalysis struct {
 }
 
 type CreateSentenceRequest struct {
-	Text     string `json:"text"`
-	Source   string `json:"source"`
-	Category string `json:"category"`
+	Text        string `json:"text"`
+	Source      string `json:"source"`
+	Category    string `json:"category"`
+	Explanation string `json:"explanation"`
 }
 
 type SentencesShowRequest struct {

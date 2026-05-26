@@ -15,18 +15,41 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *SentenceRepository) CreateSentence(text, source, category string) (model.Sentence, error) {
+func (r *SentenceRepository) CreateSentence(text, source, category, explanation string, userID int64) (model.Sentence, error) {
+	tx, err := r.db.Beginx()
+	if err != nil {
+		return model.Sentence{}, err
+	}
+	defer tx.Rollback()
+
 	var s model.Sentence
 	normalizedCategory := normalizeCategory(category)
-	err := r.db.QueryRowx(
-		`INSERT INTO tbl_sentences (text, source, category) VALUES ($1, $2, $3)
+	err = tx.QueryRowx(
+		`INSERT INTO tbl_sentences (text, source, category, created_by) VALUES ($1, $2, $3, $4)
 		RETURNING id, uuid, text, source, category, review_count, review_interval, ease_factor,
 		          last_rating, last_reviewed_at, next_review_at, created_at, deleted_at`,
 		text,
 		source,
 		normalizedCategory,
+		userID,
 	).StructScan(&s)
-	return s, err
+	if err != nil {
+		return model.Sentence{}, err
+	}
+
+	if _, err := tx.Exec(
+		`INSERT INTO tbl_analyses (sentence_id, explanation, created_by) VALUES ($1, $2, $3)`,
+		s.ID,
+		explanation,
+		userID,
+	); err != nil {
+		return model.Sentence{}, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return model.Sentence{}, err
+	}
+	return s, nil
 }
 
 func (r *SentenceRepository) ImportEnvironmentPack() (int, error) {
