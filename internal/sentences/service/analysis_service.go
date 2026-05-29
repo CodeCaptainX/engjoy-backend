@@ -123,8 +123,8 @@ func sanitizeGeminiError(message string) string {
 	return cleanLogValue(message)
 }
 
-func (s *SentenceService) CreateAndAnalyze(ctx context.Context, text, source string) (model.Sentence, model.Analysis, error) {
-	sentence, err := s.repo.CreateSentence(text, source, "general")
+func (s *SentenceService) CreateAndAnalyze(ctx context.Context, text, source string, userID int64) (model.Sentence, model.Analysis, error) {
+	sentence, err := s.repo.CreateSentence(text, source, "general", "", userID)
 	if err != nil {
 		return model.Sentence{}, model.Analysis{}, err
 	}
@@ -207,7 +207,7 @@ func (s *SentenceService) GenerateSpeech(ctx context.Context, text, mode string)
 	return s.client.GenerateSpeech(ctx, text, mode)
 }
 
-func (s *SentenceService) GetCategoryFeed(ctx context.Context, category, focus string, excludeIDs []int64, limit int) ([]model.SentenceWithAnalysis, int, error) {
+func (s *SentenceService) GetCategoryFeed(ctx context.Context, category, focus string, excludeIDs []int64, limit int, userID int64) ([]model.SentenceWithAnalysis, int, error) {
 	if limit <= 0 {
 		limit = 12
 	}
@@ -224,7 +224,7 @@ func (s *SentenceService) GetCategoryFeed(ctx context.Context, category, focus s
 		normalizedFocus = "all"
 	}
 
-	items, err := s.repo.ListRandomByCategory(normalizedCategory, excludeIDs, limit)
+	items, err := s.repo.ListRandomByCategory(normalizedCategory, excludeIDs, limit, userID)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -245,7 +245,7 @@ func (s *SentenceService) GetCategoryFeed(ctx context.Context, category, focus s
 		if err != nil {
 			return items, 0, err
 		}
-		return s.appendGeneratedCategoryItems(ctx, items, excludeIDs, normalizedCategory, limit, len(inserted))
+		return s.appendGeneratedCategoryItems(ctx, items, excludeIDs, normalizedCategory, limit, len(inserted), userID)
 	}
 
 	if remaining := s.geminiCooldownRemaining(); remaining > 0 {
@@ -276,10 +276,10 @@ func (s *SentenceService) GetCategoryFeed(ctx context.Context, category, focus s
 		return items, 0, err
 	}
 
-	return s.appendGeneratedCategoryItems(ctx, items, excludeIDs, normalizedCategory, limit, len(inserted))
+	return s.appendGeneratedCategoryItems(ctx, items, excludeIDs, normalizedCategory, limit, len(inserted), userID)
 }
 
-func (s *SentenceService) appendGeneratedCategoryItems(ctx context.Context, items []model.SentenceWithAnalysis, excludeIDs []int64, category string, limit int, generated int) ([]model.SentenceWithAnalysis, int, error) {
+func (s *SentenceService) appendGeneratedCategoryItems(ctx context.Context, items []model.SentenceWithAnalysis, excludeIDs []int64, category string, limit int, generated int, userID int64) ([]model.SentenceWithAnalysis, int, error) {
 	if len(items) >= limit {
 		return items, generated, nil
 	}
@@ -288,7 +288,7 @@ func (s *SentenceService) appendGeneratedCategoryItems(ctx context.Context, item
 		allExclude = append(allExclude, item.SentenceID)
 	}
 
-	moreItems, err := s.repo.ListRandomByCategory(category, allExclude, limit-len(items))
+	moreItems, err := s.repo.ListRandomByCategory(category, allExclude, limit-len(items), userID)
 	if err != nil {
 		return items, generated, err
 	}

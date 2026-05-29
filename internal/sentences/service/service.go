@@ -32,16 +32,16 @@ func NewSentenceService(db *sqlx.DB) *SentenceService {
 	}
 }
 
-func (s *SentenceService) Create(req model.CreateSentenceRequest) (*model.SentenceResponse, error) {
-	return s.repo.Create(strings.TrimSpace(req.Text), req.Source, req.Category)
+func (s *SentenceService) CreateSentence(req model.CreateSentenceRequest, userID int64) (model.Sentence, error) {
+	return s.repo.CreateSentence(strings.TrimSpace(req.Text), req.Source, req.Category, req.Explanation, userID)
 }
 
-func (s *SentenceService) Show(req postgres.QueryParamRequest) ([]model.SentenceWithAnalysis, int, *apiresponse.ErrorResponse) {
-	return s.repo.Show(req)
+func (s *SentenceService) Show(req postgres.QueryParamRequest, userID int64) ([]model.SentenceWithAnalysis, int, *apiresponse.ErrorResponse) {
+	return s.repo.Show(req, userID)
 }
 
-func (s *SentenceService) List() ([]model.SentenceWithAnalysis, error) {
-	items, _, err := s.repo.Show(postgres.QueryParamRequest{})
+func (s *SentenceService) List(userID int64) ([]model.SentenceWithAnalysis, error) {
+	items, _, err := s.repo.Show(postgres.QueryParamRequest{}, userID)
 	if err != nil {
 		return nil, err.Err
 	}
@@ -56,8 +56,8 @@ func (s *SentenceService) ImportEnvironmentPack() (int, error) {
 	return s.repo.ImportEnvironmentPack()
 }
 
-func (s *SentenceService) ListSentences(page, limit int) ([]model.SentenceWithAnalysis, int, error) {
-	return s.repo.ListSentences(page, limit)
+func (s *SentenceService) ListSentences(page, limit int, userID int64) ([]model.SentenceWithAnalysis, int, error) {
+	return s.repo.ListSentences(page, limit, userID)
 }
 
 func (s *SentenceService) GetSentence(id int64) (model.Sentence, error) {

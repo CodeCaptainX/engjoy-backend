@@ -62,7 +62,7 @@ func (r *SentenceRepository) Create(text, source, category string) (*model.Sente
 	return &model.SentenceResponse{Sentence: sentence}, nil
 }
 
-func (r *SentenceRepository) Show(req postgres.QueryParamRequest) ([]model.SentenceWithAnalysis, int, *apiresponse.ErrorResponse) {
+func (r *SentenceRepository) Show(req postgres.QueryParamRequest, userID int64) ([]model.SentenceWithAnalysis, int, *apiresponse.ErrorResponse) {
 	req, err := model.SanitizeSentenceShowRequest(req, "s")
 	if err != nil {
 		return nil, 0, customlog.NewCustomLogResponse(customlog.ErrorParams{
@@ -92,10 +92,16 @@ func (r *SentenceRepository) Show(req postgres.QueryParamRequest) ([]model.Sente
 	}
 
 	items := []model.SentenceWithAnalysis{}
+	userIDIndex := len(args) + 1
 	query := fmt.Sprintf(`
 		SELECT s.id AS sentence_id, s.uuid, s.text, s.source, s.category, s.review_count, s.review_interval,
 		       s.ease_factor, s.last_rating, s.last_reviewed_at, s.next_review_at, s.created_at,
-		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at
+		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at,
+		       COALESCE(rc.count, 0) AS reaction_count,
+		       CASE WHEN $%d > 0 THEN EXISTS(
+		           SELECT 1 FROM tbl_users_sentences_favourites 
+		           WHERE user_id = $%d AND sentence_id = s.id AND deleted_at IS NULL
+		       ) ELSE false END AS is_favorited
 		FROM tbl_sentences s
 		LEFT JOIN LATERAL (
 			SELECT id, explanation, vocabulary, grammar_focus, example, created_at
@@ -104,12 +110,20 @@ func (r *SentenceRepository) Show(req postgres.QueryParamRequest) ([]model.Sente
 			ORDER BY created_at DESC
 			LIMIT 1
 		) a ON true
+		LEFT JOIN LATERAL (
+			SELECT COUNT(*) AS count
+			FROM tbl_sentences_reactions
+			WHERE sentence_id = s.id AND deleted_at IS NULL
+		) rc ON true
 		WHERE %s
 		%s
 		%s
-	`, whereSQL, postgres.BuildSQLSort(req.Sorts), postgres.BuildPaging(req.PagingOptions.Page, req.PagingOptions.PerPage))
+	`, userIDIndex, userIDIndex, whereSQL, postgres.BuildSQLSort(req.Sorts), postgres.BuildPaging(req.PagingOptions.Page, req.PagingOptions.PerPage))
 
-	err = r.db.Select(&items, query, args...)
+	// No need to rebind if we use $n correctly
+	fullArgs := append(args, userID)
+
+	err = r.db.Select(&items, query, fullArgs...)
 	if err != nil {
 		return nil, 0, customlog.NewCustomLogResponse(customlog.ErrorParams{
 			LogMessage: "sentence_show_fetch_failed",

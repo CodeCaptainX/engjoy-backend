@@ -44,6 +44,7 @@ func (h *SentenceHandler) analyzeSentence(c *fiber.Ctx) error {
 }
 
 func (h *SentenceHandler) createSentence(c *fiber.Ctx) error {
+	userID := c.Locals("userID").(int64)
 	var req model.CreateSentenceRequest
 	if err := c.BodyParser(&req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request")
@@ -53,7 +54,7 @@ func (h *SentenceHandler) createSentence(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "text is required")
 	}
 
-	sentence, err := h.service.Create(req)
+	sentence, err := h.service.CreateSentence(req, userID)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
@@ -81,7 +82,8 @@ func (h *SentenceHandler) show(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request")
 	}
 
-	items, total, respErr := h.service.Show(*req)
+	userID, _ := c.Locals("userID").(int64)
+	items, total, respErr := h.service.Show(*req, userID)
 	if respErr != nil {
 		return c.Status(respErr.StatusCode).JSON(response.ApiResponseError(false, respErr.MessageID, respErr.StatusCode, respErr.Err))
 	}
@@ -120,7 +122,8 @@ func (h *SentenceHandler) categoryFeed(c *fiber.Ctx) error {
 		req.Limit = 12
 	}
 
-	items, generated, err := h.service.GetCategoryFeed(c.Context(), req.Category, req.Focus, req.ExcludeIDs, req.Limit)
+	userID, _ := c.Locals("userID").(int64)
+	items, generated, err := h.service.GetCategoryFeed(c.Context(), req.Category, req.Focus, req.ExcludeIDs, req.Limit, userID)
 	if err != nil {
 		return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "category feed fetched with error", fiber.StatusOK, fiber.Map{
 			"sentences": []any{},

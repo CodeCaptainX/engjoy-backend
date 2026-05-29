@@ -57,6 +57,8 @@ type SentenceWithAnalysis struct {
 	GrammarFocus   *string    `db:"grammar_focus" json:"grammar_focus"`
 	Example        *string    `db:"example" json:"example"`
 	AnalyzedAt     *time.Time `db:"analyzed_at" json:"analyzed_at"`
+	ReactionCount  int        `db:"reaction_count" json:"reaction_count"`
+	IsFavorited    bool       `db:"is_favorited" json:"is_favorited"`
 }
 
 type CreateSentenceRequest struct {

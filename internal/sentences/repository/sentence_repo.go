@@ -228,7 +228,7 @@ func (r *SentenceRepository) InsertStaticSentenceEntries(category, source string
 	return inserted, nil
 }
 
-func (r *SentenceRepository) ListRandomByCategory(category string, excludeIDs []int64, limit int) ([]model.SentenceWithAnalysis, error) {
+func (r *SentenceRepository) ListRandomByCategory(category string, excludeIDs []int64, limit int, userID int64) ([]model.SentenceWithAnalysis, error) {
 	if limit <= 0 {
 		limit = 12
 	}
@@ -236,7 +236,12 @@ func (r *SentenceRepository) ListRandomByCategory(category string, excludeIDs []
 	baseQuery := `
 		SELECT s.id AS sentence_id, s.uuid, s.text, s.source, s.category, s.review_count, s.review_interval,
 		       s.ease_factor, s.last_rating, s.last_reviewed_at, s.next_review_at, s.created_at,
-		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at
+		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at,
+		       COALESCE(rc.count, 0) AS reaction_count,
+		       CASE WHEN ? > 0 THEN EXISTS(
+		           SELECT 1 FROM tbl_users_sentences_favourites 
+		           WHERE user_id = ? AND sentence_id = s.id AND deleted_at IS NULL
+		       ) ELSE false END AS is_favorited
 		FROM tbl_sentences s
 		LEFT JOIN LATERAL (
 			SELECT id, explanation, vocabulary, grammar_focus, example, created_at
@@ -245,10 +250,15 @@ func (r *SentenceRepository) ListRandomByCategory(category string, excludeIDs []
 			ORDER BY created_at DESC
 			LIMIT 1
 		) a ON true
+		LEFT JOIN LATERAL (
+			SELECT COUNT(*) AS count
+			FROM tbl_sentences_reactions
+			WHERE sentence_id = s.id AND deleted_at IS NULL
+		) rc ON true
 		WHERE s.deleted_at IS NULL
 	`
 
-	args := []any{}
+	args := []any{userID, userID}
 	if normalized := normalizeCategory(category); normalized != "all" {
 		baseQuery += " AND s.category = ?"
 		args = append(args, normalized)
@@ -288,7 +298,7 @@ func (r *SentenceRepository) CreateAnalysis(sentenceID int64, explanation, vocab
 	return a, err
 }
 
-func (r *SentenceRepository) ListSentences(page int, limit int) ([]model.SentenceWithAnalysis, int, error) {
+func (r *SentenceRepository) ListSentences(page int, limit int, userID int64) ([]model.SentenceWithAnalysis, int, error) {
 	total, err := r.CountSentences()
 	if err != nil {
 		return nil, 0, err
@@ -298,7 +308,12 @@ func (r *SentenceRepository) ListSentences(page int, limit int) ([]model.Sentenc
 	query := `
 		SELECT s.id AS sentence_id, s.uuid, s.text, s.source, s.category, s.review_count, s.review_interval,
 		       s.ease_factor, s.last_rating, s.last_reviewed_at, s.next_review_at, s.created_at,
-		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at
+		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at,
+		       COALESCE(rc.count, 0) AS reaction_count,
+		       CASE WHEN $1 > 0 THEN EXISTS(
+		           SELECT 1 FROM tbl_users_sentences_favourites 
+		           WHERE user_id = $1 AND sentence_id = s.id AND deleted_at IS NULL
+		       ) ELSE false END AS is_favorited
 		FROM tbl_sentences s
 		LEFT JOIN LATERAL (
 			SELECT id, explanation, vocabulary, grammar_focus, example, created_at
@@ -307,11 +322,16 @@ func (r *SentenceRepository) ListSentences(page int, limit int) ([]model.Sentenc
 			ORDER BY created_at DESC
 			LIMIT 1
 		) a ON true
+		LEFT JOIN LATERAL (
+			SELECT COUNT(*) AS count
+			FROM tbl_sentences_reactions
+			WHERE sentence_id = s.id AND deleted_at IS NULL
+		) rc ON true
 		WHERE s.deleted_at IS NULL
 		ORDER BY s.created_at DESC
 		` + postgres.BuildPaging(page, limit)
 
-	err = r.db.Select(&items, query)
+	err = r.db.Select(&items, query, userID)
 	return items, total, err
 }
 
@@ -455,7 +475,9 @@ func (r *SentenceRepository) ListFavorites(userID int64, req postgres.QueryParam
 	query := `
 		SELECT s.id AS sentence_id, s.uuid, s.text, s.source, s.category, s.review_count, s.review_interval,
 		       s.ease_factor, s.last_rating, s.last_reviewed_at, s.next_review_at, s.created_at,
-		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at
+		       a.id AS analysis_id, a.explanation, a.vocabulary, a.grammar_focus, a.example, a.created_at AS analyzed_at,
+		       COALESCE(rc.count, 0) AS reaction_count,
+		       true AS is_favorited
 		FROM tbl_sentences s
 		JOIN tbl_users_sentences_favourites f ON s.id = f.sentence_id
 		LEFT JOIN LATERAL (
@@ -465,6 +487,11 @@ func (r *SentenceRepository) ListFavorites(userID int64, req postgres.QueryParam
 			ORDER BY created_at DESC
 			LIMIT 1
 		) a ON true
+		LEFT JOIN LATERAL (
+			SELECT COUNT(*) AS count
+			FROM tbl_sentences_reactions
+			WHERE sentence_id = s.id AND deleted_at IS NULL
+		) rc ON true
 		WHERE f.user_id = $1 AND f.deleted_at IS NULL
 		ORDER BY f.created_at DESC
 		` + postgres.BuildPaging(req.PagingOptions.Page, req.PagingOptions.PerPage)

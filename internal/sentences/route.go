@@ -35,6 +35,7 @@ func RegisterRoutes(app *fiber.App, db *sqlx.DB, jwtSecret string) *service.Sent
 	api.Get("/sentences/:sentenceUuid/reactions", sentenceHandler.getReactionCount)
 
 	api.Post("/sentence", sentenceHandler.createSentence)
+	api.Delete("/sentence/:id", sentenceHandler.deleteSentence)
 	api.Get("/sentence", sentenceHandler.show)
 	api.Get("/sentence/:id", sentenceHandler.getSentence)
 
