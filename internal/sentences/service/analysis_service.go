@@ -86,6 +86,8 @@ func geminiFailureReason(err error) string {
 		return "missing_key"
 	case strings.Contains(message, "status 401"), strings.Contains(message, "status 403"), strings.Contains(message, "permission_denied"), strings.Contains(message, "api key"):
 		return "auth"
+	case strings.Contains(message, "generaterequestsperday") || strings.Contains(message, "daily quota"):
+		return "daily_quota"
 	case strings.Contains(message, "status 429"), strings.Contains(message, "quota"), strings.Contains(message, "rate"):
 		return "quota"
 	case strings.Contains(message, "context deadline"), strings.Contains(message, "timeout"), strings.Contains(message, "connection"), strings.Contains(message, "no such host"):
@@ -239,13 +241,25 @@ func (s *SentenceService) GetCategoryFeed(ctx context.Context, category, focus s
 	}
 
 	requestedCount := limit - len(items) + 4
-	staticEntries := sentencepack.StaticCategoryEntries(normalizedCategory, normalizedFocus, existingTexts, requestedCount)
-	if len(staticEntries) > 0 {
-		inserted, err := s.repo.InsertStaticSentenceEntries(normalizedCategory, "static-pack", staticEntries)
-		if err != nil {
-			return items, 0, err
+
+	// Only use static pack if the category actually exists in it
+	staticAvailable := false
+	for _, cat := range sentencepack.StaticSentencePackCategories() {
+		if cat == normalizedCategory {
+			staticAvailable = true
+			break
 		}
-		return s.appendGeneratedCategoryItems(ctx, items, excludeIDs, normalizedCategory, limit, len(inserted), userID)
+	}
+
+	if staticAvailable {
+		staticEntries := sentencepack.StaticCategoryEntries(normalizedCategory, normalizedFocus, existingTexts, requestedCount)
+		if len(staticEntries) > 0 {
+			inserted, err := s.repo.InsertStaticSentenceEntries(normalizedCategory, "static-pack", staticEntries)
+			if err != nil {
+				return items, 0, err
+			}
+			return s.appendGeneratedCategoryItems(ctx, items, excludeIDs, normalizedCategory, limit, len(inserted), userID)
+		}
 	}
 
 	if remaining := s.geminiCooldownRemaining(); remaining > 0 {
@@ -268,7 +282,7 @@ func (s *SentenceService) GetCategoryFeed(ctx context.Context, category, focus s
 		if geminiFailureReason(err) == "quota" {
 			s.startGeminiCooldown(30 * time.Second)
 		}
-		return items, 0, nil
+		return items, 0, err // Return the error so it can be seen in the response
 	}
 
 	inserted, err := s.repo.InsertGeneratedSentences(normalizedCategory, "ai-generated", generatedTexts)

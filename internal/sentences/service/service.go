@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"strings"
 	"sync"
 	"time"
@@ -84,7 +85,7 @@ func (s *SentenceService) ListFavorites(userID int64, req postgres.QueryParamReq
 	return s.repo.ListFavorites(userID, req)
 }
 
-func (s *SentenceService) ToggleReaction(userID int64, sentenceUUID string, reactionType string) error {
+func (s *SentenceService) ToggleReaction(userID int64, sentenceUUID string, reactionType string) (string, error) {
 	return s.repo.ToggleReaction(userID, sentenceUUID, reactionType)
 }
 
@@ -109,7 +110,10 @@ func (s *SentenceService) GenerateAndSaveSentences(ctx context.Context, category
 
 	generatedTexts, err := s.client.GenerateCategorySentences(ctx, normalizedCategory, focus, existingTexts, count)
 	if err != nil {
-		if geminiFailureReason(err) == "quota" {
+		reason := geminiFailureReason(err)
+		if reason == "daily_quota" {
+			s.startGeminiCooldown(24 * time.Hour)
+		} else if reason == "quota" {
 			s.startGeminiCooldown(1 * time.Hour)
 		}
 		return nil, err
@@ -119,26 +123,82 @@ func (s *SentenceService) GenerateAndSaveSentences(ctx context.Context, category
 }
 
 func (s *SentenceService) StartDailyGenerationWorker() {
-	ticker := time.NewTicker(24 * time.Hour)
+	// Trigger once on startup after a 5s delay
+	go func() {
+		time.Sleep(5 * time.Second)
+		s.RunDailyGeneration()
+	}()
+
+	// Run every 1 hour to stay within the 20-request daily limit
+	ticker := time.NewTicker(1 * time.Hour)
 	go func() {
 		for {
-			// Initial delay if needed or run immediately on first start
-			// For now, let's just wait for the first tick
 			<-ticker.C
-			log.Println("[SentenceMiner] starting automatic daily sentence generation...")
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-			_, err := s.GenerateAndSaveSentences(ctx, "general", "", 20)
-			cancel()
-			if err != nil {
-				log.Printf("[SentenceMiner] daily generation failed: %v", err)
-				// If quota error, we could retry in 1 hour
-				if strings.Contains(strings.ToLower(err.Error()), "quota") {
-					time.Sleep(1 * time.Hour)
-					ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-					_, _ = s.GenerateAndSaveSentences(ctx, "general", "", 20)
-					cancel()
-				}
-			}
+			s.RunDailyGeneration()
 		}
 	}()
+}
+
+func (s *SentenceService) RunDailyGeneration() {
+	categories := []string{
+		"daily-life", "travel", "airport", "restaurant", "hospital",
+		"banking", "job-interview", "office", "shopping", "tech-support",
+		"school", "sports", "phone-call", "emergency", "renting",
+		"general", "deep-sea-exploration", "space-travel",
+	}
+
+	// Pick exactly ONE random category
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	cat := categories[r.Intn(len(categories))]
+
+	// Models to try in order (including the primary one from config)
+	cfg := config.NewConfig()
+	fallbackModels := []string{
+		cfg.GeminiModel, // Start with the primary model (2.5-flash)
+		"gemini-2.0-flash",
+		"gemini-1.5-flash",
+		"gemini-1.5-flash-8b",
+	}
+
+	log.Printf("[SentenceMiner] periodic generation: picking random category \"%s\"", cat)
+	
+	currentModelIdx := 0
+	for currentModelIdx < len(fallbackModels) {
+		// Set the model for this attempt
+		s.client.SetModel(fallbackModels[currentModelIdx])
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+		_, err := s.GenerateAndSaveSentences(ctx, cat, "useful expressions", 10)
+		cancel()
+
+		if err == nil {
+			log.Printf("[SentenceMiner] successfully generated sentences for %s using %s", cat, fallbackModels[currentModelIdx])
+			return // Success, exit this cycle
+		}
+
+		reason := geminiFailureReason(err)
+		log.Printf("[SentenceMiner] generation failed for category %s with model %s: %v (reason: %s)", 
+			cat, fallbackModels[currentModelIdx], err, reason)
+
+		if reason == "daily_quota" {
+			log.Printf("[SentenceMiner] daily quota reached for %s, switching to next model...", fallbackModels[currentModelIdx])
+			currentModelIdx++
+			if currentModelIdx < len(fallbackModels) {
+				// We'll set the new model in the next iteration of the loop
+				continue 
+			} else {
+				log.Println("[SentenceMiner] ALL models exhausted for today. Waiting for tomorrow.")
+				s.startGeminiCooldown(24 * time.Hour)
+				return
+			}
+		}
+
+		if reason == "quota" {
+			log.Println("[SentenceMiner] temporary rate limit reached, will retry in next cycle")
+			return
+		}
+
+		// For other errors, just stop this cycle
+		break
+	}
 }

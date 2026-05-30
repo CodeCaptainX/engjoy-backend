@@ -35,6 +35,10 @@ func NewClient(apiKey, model, ttsModel, baseURL string) *Client {
 	}
 }
 
+func (c *Client) SetModel(modelName string) {
+	c.model = modelName
+}
+
 func (c *Client) ListModels(ctx context.Context) ([]model.ModelInfo, error) {
 	if strings.TrimSpace(c.apiKey) == "" {
 		return nil, fmt.Errorf("gemini api key is not configured")
@@ -178,24 +182,29 @@ func (c *Client) GenerateCategorySentences(ctx context.Context, category, focus 
 
 	resp, err := c.http.Do(req)
 	if err != nil {
+		fmt.Printf("[GeminiClient] request_failed err=%v\n", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		body, _ := io.ReadAll(resp.Body)
+		fmt.Printf("[GeminiClient] api_error status=%d body=%s\n", resp.StatusCode, string(body))
 		return nil, fmt.Errorf("gemini error: status %d - %s", resp.StatusCode, string(body))
 	}
 
 	var out model.GenerateResponse
 	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+		fmt.Printf("[GeminiClient] decode_failed err=%v\n", err)
 		return nil, err
 	}
 	if len(out.Candidates) == 0 || len(out.Candidates[0].Content.Parts) == 0 {
+		fmt.Printf("[GeminiClient] empty_candidates response=%+v\n", out)
 		return nil, fmt.Errorf("gemini empty response")
 	}
 
 	text := strings.TrimSpace(out.Candidates[0].Content.Parts[0].Text)
+	fmt.Printf("[GeminiClient] raw_text=%s\n", text)
 	text = strings.TrimPrefix(text, "```json")
 	text = strings.TrimPrefix(text, "```")
 	text = strings.TrimSuffix(text, "```")

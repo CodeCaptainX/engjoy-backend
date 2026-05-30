@@ -1,19 +1,26 @@
 package main
 
 import (
+	"context"
+	"flag"
 	"fmt"
 	"log"
 	"path/filepath"
+	"time"
 
 	config "sentenceminer/config"
 	"sentenceminer/config/database"
 	"sentenceminer/config/db"
 	"sentenceminer/handler"
 	"sentenceminer/internal/sentences/repository"
+	"sentenceminer/internal/sentences/service"
 	"sentenceminer/routers"
 )
 
 func main() {
+	generateFlag := flag.Bool("generate", false, "run sentence generation for all categories and exit")
+	flag.Parse()
+
 	cfg := config.NewConfig()
 
 	dbPool := database.Connect(cfg.DatabaseURL)
@@ -31,6 +38,31 @@ func main() {
 		} else {
 			log.Println("static sentence packs imported successfully")
 		}
+	}
+
+	if *generateFlag {
+		log.Println("CLI mode: starting sentence generation...")
+		sentenceSvc := service.NewSentenceService(dbPool)
+		
+		categories := []string{
+			"daily-life", "travel", "airport", "restaurant", "hospital",
+			"banking", "job-interview", "office", "shopping", "tech-support",
+			"school", "sports", "phone-call", "emergency", "renting",
+			"general", "deep-sea-exploration", "space-travel",
+		}
+
+		for _, cat := range categories {
+			log.Printf("Generating for category: %s...", cat)
+			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+			_, err := sentenceSvc.GenerateAndSaveSentences(ctx, cat, "useful expressions", 10)
+			cancel()
+			if err != nil {
+				log.Printf("Generation failed for %s: %v", cat, err)
+			}
+			time.Sleep(2 * time.Second)
+		}
+		log.Println("Generation complete. Exiting.")
+		return
 	}
 
 	app := routers.New()

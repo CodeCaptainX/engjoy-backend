@@ -526,7 +526,7 @@ func (r *SentenceRepository) RemoveFavorite(userID int64, sentenceUUID string) e
 	return err
 }
 
-func (r *SentenceRepository) ToggleReaction(userID int64, sentenceUUID string, reactionType string) error {
+func (r *SentenceRepository) ToggleReaction(userID int64, sentenceUUID string, reactionType string) (string, error) {
 	var exists bool
 	err := r.db.QueryRowx(
 		`SELECT EXISTS (
@@ -541,9 +541,10 @@ func (r *SentenceRepository) ToggleReaction(userID int64, sentenceUUID string, r
 		reactionType,
 	).Scan(&exists)
 	if err != nil {
-		return err
+		return "", err
 	}
 
+	action := ""
 	if exists {
 		_, err = r.db.Exec(
 			`UPDATE tbl_sentences_reactions 
@@ -556,6 +557,7 @@ func (r *SentenceRepository) ToggleReaction(userID int64, sentenceUUID string, r
 			sentenceUUID,
 			reactionType,
 		)
+		action = "removed"
 	} else {
 		_, err = r.db.Exec(
 			`INSERT INTO tbl_sentences_reactions (user_id, sentence_id, reaction_type)
@@ -564,8 +566,9 @@ func (r *SentenceRepository) ToggleReaction(userID int64, sentenceUUID string, r
 			sentenceUUID,
 			reactionType,
 		)
+		action = "added"
 	}
-	return err
+	return action, err
 }
 
 func (r *SentenceRepository) GetReactionCount(sentenceUUID string, reactionType string) (int, error) {

@@ -265,11 +265,18 @@ func (h *SentenceHandler) toggleReaction(c *fiber.Ctx) error {
 		req.ReactionType = "heart" // default
 	}
 
-	if err := h.service.ToggleReaction(userID, sentenceUUID, req.ReactionType); err != nil {
+	action, err := h.service.ToggleReaction(userID, sentenceUUID, req.ReactionType)
+	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "reaction toggled", fiber.StatusOK, nil))
+	// Get updated count to help frontend
+	count, _ := h.service.GetReactionCount(sentenceUUID, req.ReactionType)
+
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "reaction toggled", fiber.StatusOK, fiber.Map{
+		"action": action, // "added" or "removed"
+		"count":  count,
+	}))
 }
 
 func (h *SentenceHandler) getReactionCount(c *fiber.Ctx) error {

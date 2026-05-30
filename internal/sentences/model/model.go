@@ -28,6 +28,7 @@ type SentenceResponse struct {
 
 type Analysis struct {
 	ID           int64      `db:"id" json:"id"`
+	UUID         string     `db:"uuid" json:"uuid"`
 	SentenceID   int64      `db:"sentence_id" json:"sentence_id"`
 	Explanation  string     `db:"explanation" json:"explanation"`
 	Vocabulary   string     `db:"vocabulary" json:"vocabulary"`
