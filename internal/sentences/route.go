@@ -12,6 +12,7 @@ func RegisterRoutes(app *fiber.App, db *sqlx.DB, jwtSecret string) *service.Sent
 	api := app.Group("/api")
 
 	sentenceHandler := NewSentenceHandler(db)
+	api.Get("/categories", sentenceHandler.showCategories)
 	api.Post("/sentences", sentenceHandler.createSentence)
 	api.Get("/sentences", sentenceHandler.show)
 	api.Post("/sentences/feed", sentenceHandler.categoryFeed)

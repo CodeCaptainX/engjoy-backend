@@ -459,6 +459,18 @@ func normalizeCategory(category string) string {
 	return value
 }
 
+func (r *SentenceRepository) ListCategories() ([]model.SentenceCategory, error) {
+	items := []model.SentenceCategory{}
+	err := r.db.Select(&items, `SELECT id, uuid, name, display_name, description, created_at FROM tbl_sentences_categories WHERE deleted_at IS NULL ORDER BY "order" ASC`)
+	return items, err
+}
+
+func (r *SentenceRepository) GetRandomCategoryName() (string, error) {
+	var name string
+	err := r.db.Get(&name, `SELECT name FROM tbl_sentences_categories WHERE deleted_at IS NULL ORDER BY RANDOM() LIMIT 1`)
+	return name, err
+}
+
 func (r *SentenceRepository) ListFavorites(userID int64, req postgres.QueryParamRequest) ([]model.SentenceWithAnalysis, int, error) {
 	var total int
 	err := r.db.Get(&total, `

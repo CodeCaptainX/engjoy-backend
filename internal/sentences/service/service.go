@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand"
 	"strings"
 	"sync"
 	"time"
@@ -93,6 +92,14 @@ func (s *SentenceService) GetReactionCount(sentenceUUID string, reactionType str
 	return s.repo.GetReactionCount(sentenceUUID, reactionType)
 }
 
+func (s *SentenceService) GetRandomCategoryName() (string, error) {
+	return s.repo.GetRandomCategoryName()
+}
+
+func (s *SentenceService) ListCategories() ([]model.SentenceCategory, error) {
+	return s.repo.ListCategories()
+}
+
 func (s *SentenceService) GenerateAndSaveSentences(ctx context.Context, category, focus string, count int) ([]model.Sentence, error) {
 	if remaining := s.geminiCooldownRemaining(); remaining > 0 {
 		return nil, fmt.Errorf("gemini is on cooldown, try again in %v", remaining)
@@ -140,16 +147,12 @@ func (s *SentenceService) StartDailyGenerationWorker() {
 }
 
 func (s *SentenceService) RunDailyGeneration() {
-	categories := []string{
-		"daily-life", "travel", "airport", "restaurant", "hospital",
-		"banking", "job-interview", "office", "shopping", "tech-support",
-		"school", "sports", "phone-call", "emergency", "renting",
-		"general", "deep-sea-exploration", "space-travel",
+	// Pick exactly ONE random category from the database
+	cat, err := s.repo.GetRandomCategoryName()
+	if err != nil {
+		log.Printf("[SentenceMiner] periodic generation: failed to fetch random category: %v", err)
+		return
 	}
-
-	// Pick exactly ONE random category
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	cat := categories[r.Intn(len(categories))]
 
 	// Models to try in order (including the primary one from config)
 	cfg := config.NewConfig()
@@ -160,7 +163,7 @@ func (s *SentenceService) RunDailyGeneration() {
 		"gemini-1.5-flash-8b",
 	}
 
-	log.Printf("[SentenceMiner] periodic generation: picking random category \"%s\"", cat)
+	log.Printf("[SentenceMiner] periodic generation: picked random category \"%s\" from database", cat)
 	
 	currentModelIdx := 0
 	for currentModelIdx < len(fallbackModels) {

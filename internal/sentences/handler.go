@@ -25,6 +25,17 @@ func NewSentenceHandler(db *sqlx.DB) *SentenceHandler {
 	}
 }
 
+func (h *SentenceHandler) showCategories(c *fiber.Ctx) error {
+	items, err := h.service.ListCategories()
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(response.NewResponse(c, "categories fetched", fiber.StatusOK, fiber.Map{
+		"categories": items,
+	}))
+}
+
 func (h *SentenceHandler) analyzeSentence(c *fiber.Ctx) error {
 	id, err := strconv.ParseInt(c.Params("id"), 10, 64)
 	if err != nil {

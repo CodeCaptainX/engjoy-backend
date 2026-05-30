@@ -62,6 +62,16 @@ type SentenceWithAnalysis struct {
 	IsFavorited    bool       `db:"is_favorited" json:"is_favorited"`
 }
 
+type SentenceCategory struct {
+	ID          int64      `db:"id" json:"id"`
+	UUID        string     `db:"uuid" json:"uuid"`
+	Name        string     `db:"name" json:"name"`
+	DisplayName *string    `db:"display_name" json:"display_name,omitempty"`
+	Description *string    `db:"description" json:"description,omitempty"`
+	CreatedAt   time.Time  `db:"created_at" json:"created_at"`
+	DeletedAt   *time.Time `db:"deleted_at" json:"deleted_at,omitempty"`
+}
+
 type CreateSentenceRequest struct {
 	Text        string `json:"text"`
 	Source      string `json:"source"`
