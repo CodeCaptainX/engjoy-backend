@@ -1,0 +1,42 @@
+/conversations:
+  post:
+    summary: Create a new user conversation
+    operationId: createUserConversation
+    tags:
+      - User Conversations
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/CreateUserConversationRequest.yaml'
+    responses:
+      '201':
+        description: User conversation created successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                message:
+                  type: string
+                  example: user conversation created
+                status:
+                  type: integer
+                  example: 201
+                data:
+                  type: object
+                  properties:
+                    conversation:
+                      $ref: '../components/schemas/UserConversation.yaml'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '500':
+        $ref: '#/components/responses/InternalServerError'

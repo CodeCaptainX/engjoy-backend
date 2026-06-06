@@ -3,6 +3,8 @@ package handler
 import (
 	"sentenceminer/config"
 	"sentenceminer/internal/auth"
+	"sentenceminer/internal/conversations"
+	"sentenceminer/internal/feed"
 	"sentenceminer/internal/sentences"
 	"sentenceminer/internal/user"
 	response "sentenceminer/pkg/http/response"
@@ -28,4 +30,6 @@ func RegisterRoutes(app *fiber.App, deps RouteDependencies) {
 
 	user.RegisterRoutes(app, deps.DB)
 	auth.RegisterRoutes(app, deps.DB)
+	conversations.RegisterRoutes(api, deps.DB, deps.Config.JWTSecret)
+	feed.RegisterRoutes(api, deps.DB)
 }

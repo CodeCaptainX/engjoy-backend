@@ -2,6 +2,7 @@ package routers
 
 import (
 	"errors"
+	"log"
 	"os"
 
 	"sentenceminer/pkg/middleware"
@@ -17,6 +18,10 @@ func New() *fiber.App {
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			statusCode := fiber.StatusInternalServerError
 			message := "internal server error"
+
+			if err != nil {
+				log.Printf("Error: %v", err)
+			}
 
 			var fiberErr *fiber.Error
 			if errors.As(err, &fiberErr) {

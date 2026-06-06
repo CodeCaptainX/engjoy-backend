@@ -1,0 +1,55 @@
+openapi: 3.0.0
+info:
+  title: Engjoy Backend API
+  version: 1.0.0
+  description: API for the Engjoy language learning application, focusing on sentence mining and AI-driven analysis.
+
+servers:
+  - url: http://localhost:8080/api
+    description: Local development server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    # Schemas will be referenced from individual files
+    # Example: $ref: './components/schemas/UserConversation.yaml'
+  responses:
+    # Common responses will be defined here or referenced
+    Unauthorized:
+      description: Authentication information is missing or invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: You do not have the necessary permissions for the resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: The specified resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadRequest:
+      description: Invalid request payload or parameters.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: An unexpected server error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+paths:
+  # Paths will be referenced from individual files
+  # Example: $ref: './paths/conversations/_index.yaml'

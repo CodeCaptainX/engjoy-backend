@@ -1,0 +1,72 @@
+type: object
+properties:
+  id:
+    type: integer
+    format: int64
+    description: Unique identifier for the user conversation.
+    example: 1
+  uuid:
+    type: string
+    format: uuid
+    description: UUID for the user conversation.
+    example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+  title:
+    type: string
+    description: Optional title for the user conversation.
+    nullable: true
+    example: "My First Conversation"
+  source:
+    type: string
+    description: The origin or source of the conversation.
+    nullable: true
+    example: "Manual Entry"
+  category:
+    type: string
+    description: Category for the conversation.
+    nullable: true
+    example: "Daily Life"
+  userId:
+    type: integer
+    format: int64
+    description: ID of the user who owns this conversation.
+    example: 101
+  statusId:
+    type: integer
+    description: Status of the conversation (e.g., 1 for active).
+    example: 1
+  order:
+    type: integer
+    description: Order of the conversation.
+    example: 0
+  createdBy:
+    type: integer
+    format: int64
+    description: ID of the user who created this conversation.
+    example: 101
+  createdAt:
+    type: string
+    format: date-time
+    description: Timestamp when the conversation was created.
+    example: "2023-10-27T10:00:00Z"
+  updatedBy:
+    type: integer
+    format: int64
+    description: ID of the user who last updated this conversation.
+    example: 101
+  updatedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the conversation was last updated.
+    example: "2023-10-27T10:00:00Z"
+  deletedBy:
+    type: integer
+    format: int64
+    description: ID of the user who soft-deleted this conversation.
+    nullable: true
+    example: null
+  deletedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the conversation was soft-deleted.
+    nullable: true
+    example: null

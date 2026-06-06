@@ -1,0 +1,18 @@
+type: object
+properties:
+  title:
+    type: string
+    description: Optional title for the user conversation.
+    nullable: true
+  source:
+    type: string
+    description: The origin or source of the conversation.
+    nullable: true
+  category:
+    type: string
+    description: Category for the conversation.
+    nullable: true
+example:
+  title: My First Conversation
+  source: Manual Entry
+  category: Daily Life

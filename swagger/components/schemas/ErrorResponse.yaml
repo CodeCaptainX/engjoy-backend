@@ -1,0 +1,18 @@
+type: object
+properties:
+  success:
+    type: boolean
+    description: Indicates if the request was successful.
+    example: false
+  message:
+    type: string
+    description: A human-readable message describing the error.
+    example: "User conversation not found"
+  status:
+    type: integer
+    description: HTTP status code.
+    example: 404
+  errors:
+    type: object
+    description: Optional detailed error information.
+    nullable: true
