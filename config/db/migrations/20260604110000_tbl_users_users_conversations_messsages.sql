@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS tbl_users_conversations (
     source VARCHAR(255) NULL,
     category VARCHAR(50) NULL,
     user_id BIGINT NOT NULL,
+    is_public BOOLEAN NOT NULL DEFAULT FALSE,
     status_id INTEGER NOT NULL DEFAULT 1,
     "order" INTEGER NOT NULL DEFAULT 0,
     created_by BIGINT NOT NULL,

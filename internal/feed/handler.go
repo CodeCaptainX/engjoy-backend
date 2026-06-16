@@ -1,6 +1,7 @@
 package feed
 
 import (
+	"sentenceminer/internal/feed/service"
 	"sentenceminer/pkg/http/response"
 	"strconv"
 
@@ -9,11 +10,11 @@ import (
 )
 
 type FeedHandler struct {
-	service *FeedService
+	service *service.FeedService
 }
 
 func NewFeedHandler(db *sqlx.DB) *FeedHandler {
-	return &FeedHandler{service: NewFeedService(db)}
+	return &FeedHandler{service: service.NewFeedService(db)}
 }
 
 func (h *FeedHandler) getLearningFeed(c *fiber.Ctx) error {

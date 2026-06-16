@@ -2,8 +2,10 @@ package conversations
 
 import (
 	"errors"
+	"fmt"
 	"sentenceminer/internal/conversations/model"
 	"sentenceminer/internal/conversations/repository"
+	"sentenceminer/internal/conversations/service"
 	"sentenceminer/pkg/http/response"
 	"sentenceminer/pkg/logs"
 	"sentenceminer/pkg/postgres"
@@ -14,12 +16,12 @@ import (
 )
 
 type ConversationHandler struct {
-	service *ConversationService
+	service *service.ConversationService
 }
 
 func NewConversationHandler(db *sqlx.DB) *ConversationHandler {
 	return &ConversationHandler{
-		service: NewConversationService(db),
+		service: service.NewConversationService(db),
 	}
 }
 
@@ -27,6 +29,7 @@ func NewConversationHandler(db *sqlx.DB) *ConversationHandler {
 
 func (h *ConversationHandler) createUserConversation(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(int64) // Must be authenticated
+	fmt.Printf("DEBUG: createUserConversation body: %s\n", string(c.Body()))
 	var req model.CreateUserConversationRequest
 	if err := c.BodyParser(&req); err != nil {
 		logs.Error("create_user_conversation_body_parse_error", err.Error())
@@ -83,6 +86,17 @@ func (h *ConversationHandler) showUserConversations(c *fiber.Ctx) error {
 	if respErr != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response.ApiResponseError(false, "failed to fetch user conversations", fiber.StatusInternalServerError, respErr))
 	}
+	fmt.Printf("DEBUG: conversations fetched: %+v, total: %d\n", conversations, total)
+	
+	// Prepare the response mapping to debug what JSON structure is produced
+	respData := fiber.Map{
+		"items": conversations,
+		"total": total,
+		"page": queryParams.PagingOptions.Page,
+		"perPage": queryParams.PagingOptions.PerPage,
+	}
+	fmt.Printf("DEBUG: Final JSON Response Data: %+v\n", respData)
+	
 	return response.JSONWithPaging(c, fiber.StatusOK, "user conversations fetched", conversations, queryParams.PagingOptions.Page, queryParams.PagingOptions.PerPage, total)
 }
 

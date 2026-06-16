@@ -39,6 +39,9 @@ type ResponseWithPaging struct {
 
 func NewResponseWithPaging(c *fiber.Ctx, key string, statusCode int, data interface{}, page int, limit int, total int) ResponseWithPaging {
 	lang := c.Locals("lang").(string)
+	if data == nil {
+		data = []interface{}{}
+	}
 	return ResponseWithPaging{
 		Success:    true,
 		Message:    i18n.Translate(key, lang),
